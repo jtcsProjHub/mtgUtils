@@ -1,4 +1,4 @@
-Map<String, bool> LegalityMap = {
+Map<String, bool> legalityMap = {
   "standard": false,
   "future": false,
   "historic": false,
@@ -24,11 +24,8 @@ class CardVariation {
   String collectorId;
   int quantity;
 
-  CardVariation({
-    required this.setId,
-    required this.collectorId,
-    required this.quantity
-  });
+  CardVariation(
+      {required this.setId, required this.collectorId, required this.quantity});
 }
 
 class MtgCard {
@@ -44,21 +41,20 @@ class MtgCard {
 
   final int power;
   final int toughness;
-  
+
   final Map<String, bool> legalities;
   List<CardVariation> variationsOwned = List.empty();
 
-  MtgCard({
-    required this.name,
-    required this.type,
-    required this.oracleText,
-    required this.manaCost,
-    required this.convertedManaCost,
-    required this.colors,
-    required this.colorIdentity,
-    required this.colorIndicator,
-    required this.power,
-    required this.toughness,
-    required this.legalities
-  });
+  MtgCard(
+      {required this.name,
+      required this.type,
+      required this.oracleText,
+      required this.manaCost,
+      required this.convertedManaCost,
+      required this.colors,
+      required this.colorIdentity,
+      required this.colorIndicator,
+      required this.power,
+      required this.toughness,
+      required this.legalities});
 }

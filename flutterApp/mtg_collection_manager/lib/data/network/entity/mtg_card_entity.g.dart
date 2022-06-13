@@ -77,7 +77,7 @@ MtgCardEntity _$MtgCardEntityFromJson(Map<String, dynamic> json) =>
       typeLine: json['type_line'] as String,
       oracleText: json['oracle_text'] as String,
       power: json['power'] as int,
-      touchness: json['touchness'] as int,
+      toughness: json['toughness'] as int,
       colors: ColorsEntity.fromJson(json['colors'] as Map<String, dynamic>),
       colorIdentity: ColorIdentityEntity.fromJson(
           json['color_identity'] as Map<String, dynamic>),
@@ -85,7 +85,7 @@ MtgCardEntity _$MtgCardEntityFromJson(Map<String, dynamic> json) =>
           LegalitiesEntity.fromJson(json['legalities'] as Map<String, dynamic>),
       imageUris:
           ImageUriEntity.fromJson(json['image_uris'] as Map<String, dynamic>),
-      set: json['set'] as String,
+      setCode: json['set'] as String,
       rarity: json['rarity'] as String,
     );
 
@@ -98,11 +98,11 @@ Map<String, dynamic> _$MtgCardEntityToJson(MtgCardEntity instance) =>
       'type_line': instance.typeLine,
       'oracle_text': instance.oracleText,
       'power': instance.power,
-      'touchness': instance.touchness,
+      'toughness': instance.toughness,
       'colors': instance.colors.toJson(),
       'color_identity': instance.colorIdentity.toJson(),
       'legalities': instance.legalities.toJson(),
       'image_uris': instance.imageUris.toJson(),
-      'set': instance.set,
+      'set': instance.setCode,
       'rarity': instance.rarity,
     };

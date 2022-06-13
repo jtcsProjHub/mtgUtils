@@ -18,12 +18,11 @@ class MtgCardListResponse {
   final bool hasMore;
   final List<MtgCardEntity> data;
 
-  MtgCardListResponse({
-    required this.object, 
-    required this.totalCards,
-    required this.hasMore,
-    required this.data
-  });
+  MtgCardListResponse(
+      {required this.object,
+      required this.totalCards,
+      required this.hasMore,
+      required this.data});
 
   factory MtgCardListResponse.fromJson(Map<String, dynamic> json) =>
       _$MtgCardListResponseFromJson(json);
@@ -36,9 +35,7 @@ class MtgCardListResponse {
 class ColorsEntity {
   List<String> colors;
 
-  ColorsEntity({
-    required this.colors
-  });
+  ColorsEntity({required this.colors});
 
   factory ColorsEntity.fromJson(Map<String, dynamic> json) =>
       _$ColorsEntityFromJson(json);
@@ -53,9 +50,7 @@ is important, sortable, and filterable so I'm adding it for figuring out later. 
 class ColorIdentityEntity {
   List<String> colorIdentity;
 
-  ColorIdentityEntity({
-    required this.colorIdentity
-  });
+  ColorIdentityEntity({required this.colorIdentity});
 
   factory ColorIdentityEntity.fromJson(Map<String, dynamic> json) =>
       _$ColorIdentityEntityFromJson(json);
@@ -71,9 +66,7 @@ every few months. Probably check it against database 'last updated' info or some
 class LegalitiesEntity {
   Map<String, String> legalitites;
 
-  LegalitiesEntity({
-    required this.legalitites
-  });
+  LegalitiesEntity({required this.legalitites});
 
   factory LegalitiesEntity.fromJson(Map<String, dynamic> json) =>
       _$LegalitiesEntityFromJson(json);
@@ -88,9 +81,7 @@ all of the PNG files locally. */
 class ImageUriEntity {
   Map<String, String> imageUris;
 
-  ImageUriEntity({
-    required this.imageUris
-  });
+  ImageUriEntity({required this.imageUris});
 
   factory ImageUriEntity.fromJson(Map<String, dynamic> json) =>
       _$ImageUriEntityFromJson(json);
@@ -112,12 +103,13 @@ class MtgCardEntity {
   final String typeLine;
   final String oracleText;
   final int power;
-  final int touchness;
+  final int toughness;
   ColorsEntity colors;
   ColorIdentityEntity colorIdentity;
   LegalitiesEntity legalities;
   ImageUriEntity imageUris;
-  final String set;
+  @JsonKey(name: 'set')
+  final String setCode;
   final String rarity;
 
   MtgCardEntity({
@@ -128,13 +120,13 @@ class MtgCardEntity {
     required this.typeLine,
     required this.oracleText,
     required this.power,
-    required this.touchness,
+    required this.toughness,
     required this.colors,
     required this.colorIdentity,
     required this.legalities,
     required this.imageUris,
-    required this.set,
-    required this.rarity
+    required this.setCode,
+    required this.rarity,
   });
 
   factory MtgCardEntity.fromJson(Map<String, dynamic> json) =>
