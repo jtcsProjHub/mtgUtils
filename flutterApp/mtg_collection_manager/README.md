@@ -23,9 +23,11 @@ So here I am, trying to make a new standalone desktop utility where:
 * I can sort and search by all of the different card parameters that I can Magic Assistant, which is any combination of anything
 * The deckbuilding feature is more modern, like you see in something like Moxfield
 
-## Getting Started
+## Getting Started with Flutter
 
-This project is a starting point for a Flutter application.
+This app is written in Flutter and was a way for me to play around with their desktop app support. I've only done mobile development so this was a good excuse. There are no special setup requirements for building the app outside of what the basic instructions on their site indicate.
+
+If you'd like some beginner info on getting started with the Flutter language, they recommend these resources. Personally I really like the language, coming from a C++/OOP background. It feels very much like C# and I can follow familiar design patterns and program structures.
 
 A few resources to get you started if this is your first Flutter project:
 
@@ -35,3 +37,17 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Additional configurations for this repository
+
+I'll assume that you followed their instructions on setting up a Flutter environment. In addition to that, I happen to use [PlantUML](https://github.com/plantuml-stdlib/C4-PlantUML) for my design diagrams. If you'd like to view them and not just read the Markdown they're embedded in, you'll have to configure your system correctly.
+
+### VS Code setup for PlantUML
+* Using VSCode, install the [PlantUML plugin developed by jebbs](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml).  
+* Right click the plugin and click "Add to Workspace Recommendations" on the right-click menu.
+* Follow the plugin's documentation to install Java and GraphViz
+* Right click the plugin and go to the "Extension Settings"
+* Set the "Diagram Root" as _diagrams_
+* Set "Render" to _PlantUMLServer_
+* Set "Server" to _http://www.plantuml.com/plantuml_
+* Restart VS Code

@@ -48,46 +48,6 @@ This is the first layer that the User will interact with. There are a few major 
 * Card importing
 * Card exporting
 
-```plantuml
-@startuml
-
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
-
-Person(user, "Passionately Casual MTG Player")
-
-System_Boundary(context, "Application Components") {   
-    System_Boundary(collectionManager, "Collection Manager", "Desktop Application") {
-        Component(sortableList, "Card List", "Sortable and scrollable")
-        Component(search, "Search Interface", "Unified interface", "Option to include Scryfall results. Database-only by default")
-        Component(decks, "Deck Management")
-        Component(import, "Card Import Manager", "From CSV or MTGA files")
-        Component(export, "Card Export Manager", "To CSV or MTGA")
-    }
-    
-    Component(handler, "Query Handler", "Translation, Source Management, DB Syncing", "Triggered by receiving a card query.") {
-    } 
-            
-    ComponentDb(db, "Databases", "sqflite")
-}
-
-System_Ext(scryfall, "Scryfall"){
-}
-
-AddRelTag("eventing", $lineStyle = DashedLine())
-
-BiRel(handler, db, "Data Query and Response")
-
-Rel(user, collectionManager, "Card Query", "UI Input")
-Rel(scryfall, handler, "API Request", "REST")
-Rel(decks, search, "")
-Rel(sortableList, search, "")
-Rel(search, handler, "")
-
-SHOW_LEGEND()
-
-@enduml
-```
-
 ## Local Database Store
 I can't tell you how much I don't want this to require constant Internet connectivity. Obviously you'll need it when grabbing data on something new to the system. But for anything that I pre-existing in your collection that you already imported? Don't bother. Just grab the local data. It's what you'll be primarily searching through anyway.
 
