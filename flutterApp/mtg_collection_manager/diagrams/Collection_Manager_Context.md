@@ -21,7 +21,7 @@ System_Boundary(context, "Application Components") {
     Component(handler, "Query Handler", "Translation, Source Management, DB Syncing", "Triggered by receiving a card query.") {
     } 
             
-    ComponentDb(db, "Databases", "sqflite")
+    ComponentDb(db, "Database", "sqflite")
 }
 
 System_Ext(scryfall, "Scryfall"){

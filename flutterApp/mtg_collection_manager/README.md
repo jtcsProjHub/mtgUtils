@@ -47,7 +47,7 @@ I'll assume that you followed their instructions on setting up a Flutter environ
 * Right click the plugin and click "Add to Workspace Recommendations" on the right-click menu.
 * Follow the plugin's documentation to install Java and GraphViz
 * Right click the plugin and go to the "Extension Settings"
-* Set the "Diagram Root" as _diagrams_
-* Set "Render" to _PlantUMLServer_
-* Set "Server" to _http://www.plantuml.com/plantuml_
-* Restart VS Code
+    * Set the "Diagram Root" as _diagrams_
+    * Set "Render" to _PlantUMLServer_
+    * Set "Server" to _http://www.plantuml.com/plantuml_
+    * Restart VS Code
