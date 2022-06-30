@@ -241,4 +241,5 @@ Honestly I don't care about most of this data. My current thinking is that the S
 |-|-|-|-|-|
 |"KHM"|"Kaldheim"|"https://scryfall.com/sets/khm"|"2021-02-05"|"https://c2.scryfall.com/file/scryfall-symbols/sets/khm.svg?1655092800"
 
-The set code being the primary key. I suppose I could make it the really long ID that gets returned as well, but I can't think of any benefit to doing that. The system should probably also have a way of storing the SVG icon for the set locally.
+The set code being the primary key. I suppose I could make it the really long ID that gets returned as well, but I can't think of any benefit to doing that. Note that the system also has a way of storing the SVG icon for the set locally, but that will be at a fixed path and follow the naming convention _<set_code>.png_. So the Kaldheim set above would be at, say, _./set_icons/KHM.svg_.
+
