@@ -193,7 +193,9 @@ There are a few categories of data that jump out:
 * Card gameplay data such as:
     * Mana color and cost
     * Power and toughness
+    * Produced mana
     * Creature type and oracle text
+    * Rarity
     * Rulings and legalities
 * Printing-specific information
     * Set name and abbreviation
@@ -206,6 +208,30 @@ There are a few categories of data that jump out:
 All of this info is ultimately related by the _card name_. For the initial implementation of this app I'm going to ignore the Market Data block of information. 
 
 Regarding the set data for a specific card, it's enough to simply say what set it belongs to with either the name or three-letter code. If we need additional set information for UI flavor we can pull that from a set data table.
+
+With all that said, this table will simply contain the "card gameplay data" from above. Note that a lot of the fields which are lists will end up being simple text strings from the original JSON, since SQLite databases don't support JSON blob searches.
+
+|Card Name|Mana Color|Mana Cost|CMC|Power|Toughness|Produced Mana|Creature Type|Oracle Text|Rarity|Rulings|(Legalities)|
+|-|-|-|-|-|-|-|-|-|-|-|-|
+|String|String/JSON|String/JSON|Int|Int|Int|String/JSON|String|String|String|String/JSON|Booleans|
+
+Where:
+* Card Name - primary key
+
+This table has no foreign keys.
+
+### Card instance data
+
+As was implied in the previous section, since a particular named card can often appear in multiple sets we'll want to track those separately without having to repeat it. This table is where the "printing-specific information" from the card data will appear. So a simple table example is something along the lines of:
+
+|Multiverse ID|Card Name|Set Code|Quantity|(Image URIs)|(Local Image Paths)|
+|-|-|-|-|-|-|
+|Int|String|String|Int|Strings|Strings|
+
+Where: 
+* _Multiverse ID_ - primary key
+* _card name_ - foreign key in the card data table
+* _set code_ - foreign key in the set data table
 
 ### Set data
 
@@ -237,9 +263,15 @@ Here's what the Scryfall API returns for a set:
 
 Honestly I don't care about most of this data. My current thinking is that the Set table will look something like:
 
-|code|name|scryfall_uri|released_at|icon_svg_uri|
+|Set Code|Set Name|scryfall_uri|released_at|icon_svg_uri|
 |-|-|-|-|-|
-|"KHM"|"Kaldheim"|"https://scryfall.com/sets/khm"|"2021-02-05"|"https://c2.scryfall.com/file/scryfall-symbols/sets/khm.svg?1655092800"
+|String|String|String|String/Date|String|
 
-The set code being the primary key. I suppose I could make it the really long ID that gets returned as well, but I can't think of any benefit to doing that. Note that the system also has a way of storing the SVG icon for the set locally, but that will be at a fixed path and follow the naming convention _<set_code>.png_. So the Kaldheim set above would be at, say, _./set_icons/KHM.svg_.
+Where:
+* Set Code - primary key
 
+This table has no foreign keys.
+
+I suppose I could have made the primary key the really long ID that gets returned as well, but I can't think of any benefit to doing that. Especially because cross-referencing to the card instance table would suddenly be a lot harder. Note that the app will also have a way of storing the SVG icon for the set locally, but that will be at a fixed path and follow the naming convention _<set_code>.png_. So the Kaldheim set above would be at, say, _./set_icons/KHM.svg_.
+
+## Query Handler

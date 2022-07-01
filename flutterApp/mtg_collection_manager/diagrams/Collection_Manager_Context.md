@@ -52,4 +52,6 @@ This is the first layer that the User will interact with. There are a few major 
 I can't tell you how much I don't want this to require constant Internet connectivity. Obviously you'll need it when grabbing data on something new to the system. But for anything that I pre-existing in your collection that you already imported? Don't bother. Just grab the local data. It's what you'll be primarily searching through anyway.
 
 ## Scryfall API
-The source of all of our data. This will be used primarily when we import data, but can also be used in deck building activities.
+The source of all of our data. This will be used primarily when we import data, but can also be used in deck building activities. This pipeline will most be utilized during import activities for my intended use case.
+
+The deck building use case that I see coming in handy here is if a user wants to perform a combined search. In that case, my intent is to make sure that the UI makes it clear what cards are in the existing collection by showing them first and up top vs. what is external, coming afterwards.
