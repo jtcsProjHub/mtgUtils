@@ -20,7 +20,7 @@ So here I am, trying to make a new standalone desktop utility where:
 * I can import my card data using a modern format like MTGA
 * All necessary card detail data is pulled from a free API like Scryfall
 * The data gets stored locally so that I only need network access when performing imports on cards I don't already have
-* I can sort and search by all of the different card parameters that I can Magic Assistant, which is any combination of anything
+* I can sort and search by all of the different card parameters that I can with Magic Assistant, which is any combination of anything
 * The deckbuilding feature is more modern, like you see in something like Moxfield
 
 ## Getting Started with Flutter

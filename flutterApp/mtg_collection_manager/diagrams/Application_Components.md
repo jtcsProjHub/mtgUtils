@@ -211,9 +211,9 @@ Regarding the set data for a specific card, it's enough to simply say what set i
 
 With all that said, this table will simply contain the "card gameplay data" from above. Note that a lot of the fields which are lists will end up being simple text strings from the original JSON, since SQLite databases don't support JSON blob searches.
 
-|Card Name|Mana Color|Mana Cost|CMC|Power|Toughness|Produced Mana|Creature Type|Oracle Text|Rarity|Rulings|(Legalities)|
-|-|-|-|-|-|-|-|-|-|-|-|-|
-|String|String/JSON|String/JSON|Int|Int|Int|String/JSON|String|String|String|String/JSON|Booleans|
+|Card Name|Mana Colors|Color Identity|Mana Cost|CMC|Power|Toughness|Produced Mana|Creature Type|Oracle Text|Rarity|Rulings|(Legalities)|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|String|String/JSON|String/JSON|String/JSON|Int|Int|Int|String/JSON|String|String|String|String/JSON|Booleans|
 
 Where:
 * Card Name - primary key
@@ -224,9 +224,9 @@ This table has no foreign keys.
 
 As was implied in the previous section, since a particular named card can often appear in multiple sets we'll want to track those separately without having to repeat it. This table is where the "printing-specific information" from the card data will appear. So a simple table example is something along the lines of:
 
-|Multiverse ID|Card Name|Set Code|Quantity|(Image URIs)|(Local Image Paths)|
-|-|-|-|-|-|-|
-|Int|String|String|Int|Strings|Strings|
+|Multiverse ID|Card Name|Set Code|Quantity|Released At|(Image URIs)|(Local Image Paths)|
+|-|-|-|-|-|-|-|
+|Int|String|String|Int|String|Strings|Strings|
 
 Where: 
 * _Multiverse ID_ - primary key
@@ -275,3 +275,46 @@ This table has no foreign keys.
 I suppose I could have made the primary key the really long ID that gets returned as well, but I can't think of any benefit to doing that. Especially because cross-referencing to the card instance table would suddenly be a lot harder. Note that the app will also have a way of storing the SVG icon for the set locally, but that will be at a fixed path and follow the naming convention _<set_code>.png_. So the Kaldheim set above would be at, say, _./set_icons/KHM.svg_.
 
 ## Query Handler
+
+This is a generic interface that takes as input the relevant search terms that a user might have. Could be anything. Partial type line like _human_, all green and white cards, cmc higher than 4, or any combination thereof. These queries are intended to always form a search in the user card database. If specified, it will also search for results from Scryfall. 
+
+External search is considered optional for a few reasons, and in two different flavors. First, if you're using this utility to deck build from your own collection then it makes sense that it's off by default. But if you do check the option, then it's presumed you want to see both the results from your collection as well as the results from Scryfall. These cases are both different from when you're importing cards, where you want it turned on as a fallback search pathway.
+
+Its decision flow for fetch queries looks like this:
+
+```plantuml
+@startuml
+(*) --> "Form SQLite Query"
+--> "Query Database"
+
+if "Database has results" then
+  -->[False] "No results" as db_false
+  else
+  -->[True] "Convert DB to App Data" as db_true
+endif
+
+db_false --> if "SCRYFALL_FALLBACK" then
+  -->[True] "searchType = SCRYFALL_INCLUDE"
+  --> db_true
+  else
+  -->[False] (*)
+endif
+
+db_true --> if "USE_SCRYFALL" then
+  -->[True] "Form Scryfall Query"
+  --> "Query Scryfall API"
+  if HAS_SCRYFALL_DATA then
+  --> "Create Scryfall return set"
+  --> "Convert API to App Data"
+  --> (*)
+else
+  -->[False] (*)
+endif
+@enduml
+```
+
+Or at least that's as best as I decided to try and make it in PlantUML, which for all its niceties is also annoying for a beginner like me at times.
+
+This is distinctly separate from the update pathway, which is a basic principal of [CQS design](https://www.dotnetcurry.com/patterns-practices/1461/command-query-separation-cqs). Since we're trying to follow some semblance of a Repository Pattern here, all updates themselves will be driven through repository classes.
+
+## Card Import Manager

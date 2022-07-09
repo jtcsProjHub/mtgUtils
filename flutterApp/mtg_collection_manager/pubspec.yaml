@@ -35,6 +35,7 @@ dependencies:
   path: ^1.8.0
   path_provider: ^2.0.9
   provider: ^6.0.2
+  scryfall_api: ^1.0.0
   sqflite: ^2.0.2
 
 dev_dependencies:

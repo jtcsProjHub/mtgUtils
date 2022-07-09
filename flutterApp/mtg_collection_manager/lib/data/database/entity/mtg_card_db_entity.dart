@@ -16,8 +16,8 @@ class MtgCardDbEntity {
   static const fieldColors = 'colors';
   static const fieldColorIdentity = 'color_identity';
   static const fieldLegalities = 'legalities';
-  static const fieldImageUris = 'image_uris';
-  static const fieldSetCode = 'set_code';
+  static const fieldProducedMana = 'produced_mana';
+  static const fieldRulings = 'rulings';
   static const fieldRarity = 'rarity';
 
   final String name;
@@ -31,8 +31,8 @@ class MtgCardDbEntity {
   final String colors;
   final String colorIdentity;
   final String legalities;
-  final String imageUris;
-  final String setCode;
+  final String producedMana;
+  final String rulings;
   final String rarity;
 
   const MtgCardDbEntity({
@@ -47,8 +47,8 @@ class MtgCardDbEntity {
     required this.colors,
     required this.colorIdentity,
     required this.legalities,
-    required this.imageUris,
-    required this.setCode,
+    required this.producedMana,
+    required this.rulings,
     required this.rarity,
   });
 
@@ -64,8 +64,8 @@ class MtgCardDbEntity {
         colors = map[fieldColors] as String,
         colorIdentity = map[fieldColorIdentity] as String,
         legalities = map[fieldLegalities] as String,
-        imageUris = map[fieldImageUris] as String,
-        setCode = map[fieldSetCode] as String,
+        producedMana = map[fieldProducedMana] as String,
+        rulings = map[fieldRulings] as String,
         rarity = map[fieldRarity] as String;
 
   Map<String, dynamic> toMap() => {
@@ -80,8 +80,8 @@ class MtgCardDbEntity {
         fieldColors: colors,
         fieldColorIdentity: colorIdentity,
         fieldLegalities: legalities,
-        fieldImageUris: imageUris,
-        fieldSetCode: setCode,
+        fieldProducedMana: producedMana,
+        fieldRulings: rulings,
         fieldRarity: rarity,
       };
 }
