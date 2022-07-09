@@ -1,13 +1,13 @@
 // lib/data/database/dao/recipe_dao.dart
 
-import 'package:mtg_collection_manager/data/database/dao/base_dao.dart';
+import 'package:mtg_collection_manager/data/database/dao/card_data_dao.dart';
 import 'package:mtg_collection_manager/data/database/entity/mtg_card_db_entity.dart';
 
-class RecipeDao extends BaseDao {
+class CardDataDao extends CardDataBaseDao {
   Future<List<MtgCardDbEntity>> selectAll() async {
     final db = await getDatabase();
     final List<Map<String, dynamic>> maps =
-        await db.query(BaseDao.cardTableName);
+        await db.query(CardDataBaseDao.cardTableName);
     return List.generate(maps.length, (i) => MtgCardDbEntity.fromMap(maps[i]));
   }
 
@@ -16,7 +16,7 @@ class RecipeDao extends BaseDao {
     final batch = db.batch();
 
     for (final asset in assets) {
-      batch.insert(BaseDao.cardTableName, asset.toMap());
+      batch.insert(CardDataBaseDao.cardTableName, asset.toMap());
     }
 
     await batch.commit();

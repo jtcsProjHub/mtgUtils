@@ -4,57 +4,121 @@ because I want to do more than simple name: value storage and mangement. I'd lik
 perform my searches using the database ultimately. Otherwise I'd have to load my entire collection
 into memory everytime I launched the program, which is obviously not desireable. */
 
+import 'dart:ffi';
+
 class MtgCardDbEntity {
   static const fieldName = 'card_name';
-  static const fieldReleasedAt = 'released_at';
   static const fieldManaCost = 'mana_cost';
-  static const fieldCmc = 'cmc';
-  static const fieldTypeLine = 'type_line';
-  static const fieldOracleText = 'oracle_text';
-  static const fieldPower = 'power';
-  static const fieldToughness = 'toughness';
   static const fieldColors = 'colors';
   static const fieldColorIdentity = 'color_identity';
-  static const fieldLegalities = 'legalities';
+  static const fieldCmc = 'cmc';
+  static const fieldPower = 'power';
+  static const fieldToughness = 'toughness';
   static const fieldProducedMana = 'produced_mana';
-  static const fieldRulings = 'rulings';
+  static const fieldTypeLine = 'type_line';
+  static const fieldOracleText = 'oracle_text';
   static const fieldRarity = 'rarity';
+  static const fieldRulings = 'rulings';
+
+  // I thought about it for a while, and realistically these need to be
+  // separate columns in the DB because I can't actually search within
+  // JSON as part of a query for SQLite. Since filtering by format is
+  // so common, it made sense for each format legality to be its own
+  // column then.
+  static const fieldLegalStandard = "legal_standard";
+  static const fieldLegalFuture = "legal_future";
+  static const fieldLegalHistoric = "legal_historic";
+  static const fieldLegalGladiator = "legal_gladiator";
+  static const fieldLegalPioneer = "legal_pioneer";
+  static const fieldLegalExplorer = "legal_explorer";
+  static const fieldLegalModern = "legal_modern";
+  static const fieldLegalLegacy = "legal_legacy";
+  static const fieldLegalPauper = "legal_pauper";
+  static const fieldLegalVintage = "legal_vintage";
+  static const fieldLegalPenny = "legal_penny";
+  static const fieldLegalCommander = "legal_commander";
+  static const fieldLegalBrawl = "legal_brawl";
+  static const fieldLegalHistoricBrawl = "legal_historicbrawl";
+  static const fieldLegalAlchemy = "legal_alchemy";
+  static const fieldLegalPauperCommander = "legal_paupercommander";
+  static const fieldLegalDuel = "legal_duel";
+  static const fieldLegalOldSchool = "legal_oldschool";
+  static const fieldLegalPremodern = "legal_premodern";
 
   final String name;
-  final String releasedAt;
   final String manaCost;
-  final int convertedManaCost;
-  final String typeLine;
-  final String oracleText;
-  final int power;
-  final int toughness;
   final String colors;
   final String colorIdentity;
-  final String legalities;
+  final int convertedManaCost;
+  final int power;
+  final int toughness;
   final String producedMana;
-  final String rulings;
+  final String typeLine;
+  final String oracleText;
   final String rarity;
+  final String rulings;
+
+  // Spent a while trying to figure out how to make this stupidly long list
+  // of formats into a map<String, Bool>, but the conversion functions
+  // below toMap and fromMap really didn't like that. After some failed
+  // Google searches, well, we'll just do it this silly way for now
+  // and move on.
+  final Bool legalStandard;
+  final Bool legalFuture;
+  final Bool legalHistoric;
+  final Bool legalGladiator;
+  final Bool legalPioneer;
+  final Bool legalExplorer;
+  final Bool legalModern;
+  final Bool legalLegacy;
+  final Bool legalPauper;
+  final Bool legalVintage;
+  final Bool legalPenny;
+  final Bool legalCommander;
+  final Bool legalBrawl;
+  final Bool legalHistoricBrawl;
+  final Bool legalAlchemy;
+  final Bool legalPauperCommander;
+  final Bool legalDuel;
+  final Bool legalOldSchool;
+  final Bool legalPremodern;
 
   const MtgCardDbEntity({
     required this.name,
-    required this.releasedAt,
-    required this.manaCost,
-    required this.convertedManaCost,
-    required this.typeLine,
-    required this.oracleText,
-    required this.power,
-    required this.toughness,
     required this.colors,
     required this.colorIdentity,
-    required this.legalities,
+    required this.manaCost,
+    required this.convertedManaCost,
+    required this.power,
+    required this.toughness,
     required this.producedMana,
-    required this.rulings,
+    required this.typeLine,
+    required this.oracleText,
     required this.rarity,
+    required this.rulings,
+    required this.legalStandard,
+    required this.legalFuture,
+    required this.legalHistoric,
+    required this.legalGladiator,
+    required this.legalPioneer,
+    required this.legalExplorer,
+    required this.legalModern,
+    required this.legalLegacy,
+    required this.legalPauper,
+    required this.legalVintage,
+    required this.legalPenny,
+    required this.legalCommander,
+    required this.legalBrawl,
+    required this.legalHistoricBrawl,
+    required this.legalAlchemy,
+    required this.legalPauperCommander,
+    required this.legalDuel,
+    required this.legalOldSchool,
+    required this.legalPremodern,
   });
 
   MtgCardDbEntity.fromMap(Map<String, dynamic> map)
       : name = map[fieldName] as String,
-        releasedAt = map[fieldReleasedAt] as String,
         manaCost = map[fieldManaCost] as String,
         convertedManaCost = map[fieldCmc] as int,
         typeLine = map[fieldTypeLine] as String,
@@ -63,25 +127,60 @@ class MtgCardDbEntity {
         toughness = map[fieldToughness] as int,
         colors = map[fieldColors] as String,
         colorIdentity = map[fieldColorIdentity] as String,
-        legalities = map[fieldLegalities] as String,
         producedMana = map[fieldProducedMana] as String,
         rulings = map[fieldRulings] as String,
-        rarity = map[fieldRarity] as String;
+        rarity = map[fieldRarity] as String,
+        legalStandard = map[fieldLegalStandard] as Bool,
+        legalFuture = map[fieldLegalFuture] as Bool,
+        legalHistoric = map[fieldLegalHistoric] as Bool,
+        legalGladiator = map[fieldLegalGladiator] as Bool,
+        legalPioneer = map[fieldLegalPioneer] as Bool,
+        legalExplorer = map[fieldLegalExplorer] as Bool,
+        legalModern = map[fieldLegalModern] as Bool,
+        legalLegacy = map[fieldLegalLegacy] as Bool,
+        legalPauper = map[fieldLegalPauper] as Bool,
+        legalVintage = map[fieldLegalVintage] as Bool,
+        legalPenny = map[fieldLegalPenny] as Bool,
+        legalCommander = map[fieldLegalCommander] as Bool,
+        legalBrawl = map[fieldLegalBrawl] as Bool,
+        legalHistoricBrawl = map[fieldLegalHistoricBrawl] as Bool,
+        legalAlchemy = map[fieldLegalAlchemy] as Bool,
+        legalPauperCommander = map[fieldLegalPauperCommander] as Bool,
+        legalDuel = map[fieldLegalDuel] as Bool,
+        legalOldSchool = map[fieldLegalOldSchool] as Bool,
+        legalPremodern = map[fieldLegalPremodern] as Bool;
 
   Map<String, dynamic> toMap() => {
         fieldName: name,
-        fieldReleasedAt: releasedAt,
         fieldManaCost: manaCost,
-        fieldCmc: convertedManaCost,
-        fieldTypeLine: typeLine,
-        fieldOracleText: oracleText,
-        fieldPower: power,
-        fieldToughness: toughness,
         fieldColors: colors,
         fieldColorIdentity: colorIdentity,
-        fieldLegalities: legalities,
+        fieldCmc: convertedManaCost,
+        fieldPower: power,
+        fieldToughness: toughness,
         fieldProducedMana: producedMana,
-        fieldRulings: rulings,
+        fieldTypeLine: typeLine,
+        fieldOracleText: oracleText,
         fieldRarity: rarity,
+        fieldRulings: rulings,
+        fieldLegalStandard: legalStandard,
+        fieldLegalFuture: legalFuture,
+        fieldLegalHistoric: legalHistoric,
+        fieldLegalGladiator: legalGladiator,
+        fieldLegalPioneer: legalPioneer,
+        fieldLegalExplorer: legalExplorer,
+        fieldLegalModern: legalModern,
+        fieldLegalLegacy: legalLegacy,
+        fieldLegalPauper: legalPauper,
+        fieldLegalVintage: legalVintage,
+        fieldLegalPenny: legalPenny,
+        fieldLegalCommander: legalCommander,
+        fieldLegalBrawl: legalBrawl,
+        fieldLegalHistoricBrawl: legalHistoricBrawl,
+        fieldLegalAlchemy: legalAlchemy,
+        fieldLegalPauperCommander: legalPauperCommander,
+        fieldLegalDuel: legalDuel,
+        fieldLegalOldSchool: legalOldSchool,
+        fieldLegalPremodern: legalPremodern,
       };
 }

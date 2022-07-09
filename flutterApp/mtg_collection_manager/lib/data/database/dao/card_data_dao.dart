@@ -3,10 +3,10 @@ import 'package:mtg_collection_manager/data/database/entity/mtg_card_db_entity.d
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-abstract class BaseDao {
+abstract class CardDataBaseDao {
   static const databaseName = 'mtg-card-test-db.db';
 
-  static const cardTableName = 'cards';
+  static const cardTableName = 'card_data';
 
   @protected
   Future<Database> getDatabase() async {
@@ -35,9 +35,27 @@ abstract class BaseDao {
       ${MtgCardDbEntity.fieldProducedMana} TEXT NOT NULL,
       ${MtgCardDbEntity.fieldTypeLine} TEXT NOT NULL,
       ${MtgCardDbEntity.fieldOracleText} TEXT NOT NULL,
-      ${MtgCardDbEntity.fieldRarity} TEXT NOT NULL
-      ${MtgCardDbEntity.fieldRulings} TEXT NOT NULL
-      ${MtgCardDbEntity.fieldLegalities} TEXT NOT NULL,
+      ${MtgCardDbEntity.fieldRarity} TEXT NOT NULL,
+      ${MtgCardDbEntity.fieldRulings} TEXT NOT NULL,
+      ${MtgCardDbEntity.fieldLegalStandard} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalFuture} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalHistoric} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalGladiator} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalPioneer} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalExplorer} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalModern} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalLegacy} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalPauper} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalVintage} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalPenny} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalCommander} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalBrawl} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalHistoricBrawl} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalAlchemy} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalPauperCommander} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalDuel} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalOldSchool} INTEGER NOT NULL,
+      ${MtgCardDbEntity.fieldLegalPremodern} INTEGER NOT NULL,
       );
       ''',
     );
