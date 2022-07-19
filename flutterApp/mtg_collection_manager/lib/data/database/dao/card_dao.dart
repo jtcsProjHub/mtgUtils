@@ -1,6 +1,6 @@
 // lib/data/database/dao/recipe_dao.dart
 
-import 'package:mtg_collection_manager/data/database/dao/card_data_dao.dart';
+import 'package:mtg_collection_manager/data/database/dao/card_data_table_def.dart';
 import 'package:mtg_collection_manager/data/database/entity/mtg_card_db_entity.dart';
 
 class CardDataDao extends CardDataBaseDao {

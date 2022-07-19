@@ -14,14 +14,14 @@ abstract class CardDataBaseDao {
       join(await getDatabasesPath(), databaseName),
       onCreate: (db, version) async {
         final batch = db.batch();
-        _createRecipeTable(batch);
+        _createCardStartTable(batch);
         await batch.commit();
       },
       version: 1,
     );
   }
 
-  void _createRecipeTable(Batch batch) {
+  void _createCardStartTable(Batch batch) {
     batch.execute(
       '''
       CREATE TABLE $cardTableName(

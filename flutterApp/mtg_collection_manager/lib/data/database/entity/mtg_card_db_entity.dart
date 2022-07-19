@@ -2,7 +2,10 @@
 I'm sticking to using that as the database instead of something lighter weight like Hive 
 because I want to do more than simple name: value storage and mangement. I'd like to be able to 
 perform my searches using the database ultimately. Otherwise I'd have to load my entire collection
-into memory everytime I launched the program, which is obviously not desireable. */
+into memory everytime I launched the program, which is obviously not desireable. 
+
+The specific object here represents the programs representation of a cards raw stats.
+Specific instances that we have from a specific set or certain printing are in a different class. */
 
 import 'dart:ffi';
 
@@ -163,24 +166,24 @@ class MtgCardDbEntity {
         fieldOracleText: oracleText,
         fieldRarity: rarity,
         fieldRulings: rulings,
-        fieldLegalStandard: legalStandard,
-        fieldLegalFuture: legalFuture,
-        fieldLegalHistoric: legalHistoric,
-        fieldLegalGladiator: legalGladiator,
-        fieldLegalPioneer: legalPioneer,
-        fieldLegalExplorer: legalExplorer,
-        fieldLegalModern: legalModern,
-        fieldLegalLegacy: legalLegacy,
-        fieldLegalPauper: legalPauper,
-        fieldLegalVintage: legalVintage,
-        fieldLegalPenny: legalPenny,
-        fieldLegalCommander: legalCommander,
-        fieldLegalBrawl: legalBrawl,
-        fieldLegalHistoricBrawl: legalHistoricBrawl,
-        fieldLegalAlchemy: legalAlchemy,
-        fieldLegalPauperCommander: legalPauperCommander,
-        fieldLegalDuel: legalDuel,
-        fieldLegalOldSchool: legalOldSchool,
-        fieldLegalPremodern: legalPremodern,
+        fieldLegalStandard: legalStandard as Int,
+        fieldLegalFuture: legalFuture as Int,
+        fieldLegalHistoric: legalHistoric as Int,
+        fieldLegalGladiator: legalGladiator as Int,
+        fieldLegalPioneer: legalPioneer as Int,
+        fieldLegalExplorer: legalExplorer as Int,
+        fieldLegalModern: legalModern as Int,
+        fieldLegalLegacy: legalLegacy as Int,
+        fieldLegalPauper: legalPauper as Int,
+        fieldLegalVintage: legalVintage as Int,
+        fieldLegalPenny: legalPenny as Int,
+        fieldLegalCommander: legalCommander as Int,
+        fieldLegalBrawl: legalBrawl as Int,
+        fieldLegalHistoricBrawl: legalHistoricBrawl as Int,
+        fieldLegalAlchemy: legalAlchemy as Int,
+        fieldLegalPauperCommander: legalPauperCommander as Int,
+        fieldLegalDuel: legalDuel as Int,
+        fieldLegalOldSchool: legalOldSchool as Int,
+        fieldLegalPremodern: legalPremodern as Int,
       };
 }
