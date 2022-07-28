@@ -7,7 +7,7 @@ class CardDataDao extends CardDataBaseDao {
   Future<List<MtgCardDbEntity>> selectAll() async {
     final db = await getDatabase();
     final List<Map<String, dynamic>> maps =
-        await db.query(CardDataBaseDao.cardTableName);
+        await db.query(CardDataBaseDao.tableName);
     return List.generate(maps.length, (i) => MtgCardDbEntity.fromMap(maps[i]));
   }
 
@@ -16,7 +16,7 @@ class CardDataDao extends CardDataBaseDao {
     final batch = db.batch();
 
     for (final asset in assets) {
-      batch.insert(CardDataBaseDao.cardTableName, asset.toMap());
+      batch.insert(CardDataBaseDao.tableName, asset.toMap());
     }
 
     await batch.commit();

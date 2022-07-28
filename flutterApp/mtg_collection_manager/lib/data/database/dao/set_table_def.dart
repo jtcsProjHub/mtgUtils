@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 abstract class SetBaseDao {
   static const databaseName = 'mtg-card-test-db.db';
 
-  static const cardTableName = 'aet_data';
+  static const tableName = 'aet_data';
 
   @protected
   Future<Database> getDatabase() async {
@@ -24,7 +24,7 @@ abstract class SetBaseDao {
   void _createCardStartTable(Batch batch) {
     batch.execute(
       '''
-      CREATE TABLE $cardTableName(
+      CREATE TABLE $tableName(
       ${SetDbEntity.fieldSetCode} TEXT AS PRIMARY NOT NULL,
       ${SetDbEntity.fieldSetName} INTEGER NOT NULL,
       ${SetDbEntity.fieldScryfallUri} TEXT NOT NULL,

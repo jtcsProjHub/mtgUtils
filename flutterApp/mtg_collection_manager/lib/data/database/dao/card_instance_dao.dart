@@ -7,7 +7,7 @@ class CardInstanceDao extends CardInstanceBaseDao {
   Future<List<CardInstanceDbEntity>> selectAll() async {
     final db = await getDatabase();
     final List<Map<String, dynamic>> maps =
-        await db.query(CardInstanceBaseDao.cardTableName);
+        await db.query(CardInstanceBaseDao.tableName);
     return List.generate(
         maps.length, (i) => CardInstanceDbEntity.fromMap(maps[i]));
   }
@@ -17,7 +17,7 @@ class CardInstanceDao extends CardInstanceBaseDao {
     final batch = db.batch();
 
     for (final asset in assets) {
-      batch.insert(CardInstanceBaseDao.cardTableName, asset.toMap());
+      batch.insert(CardInstanceBaseDao.tableName, asset.toMap());
     }
 
     await batch.commit();
