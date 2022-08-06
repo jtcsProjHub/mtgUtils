@@ -1,5 +1,3 @@
-// lib/data/database/dao/recipe_dao.dart
-
 import 'package:mtg_collection_manager/data/database/dao/card_instance_table_def.dart';
 import 'package:mtg_collection_manager/data/database/entity/card_instance_db_entity.dart';
 

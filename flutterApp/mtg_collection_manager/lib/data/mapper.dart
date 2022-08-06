@@ -13,7 +13,7 @@ I don't intend on there being a flow directly from API to local instance. I inte
 on the API creating a DB entity, and then working between that and the local
 instance, along with whatever other classes are needed. There are going to
 end up being multiple DB tables anyway. So my implementation is going to end up
-with a different structure and mapping layer anyway. */
+with a different structure and mapping layer than the example I followed. */
 
 class MapperException<From, To> implements Exception {
   final String message;

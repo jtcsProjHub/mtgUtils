@@ -8,12 +8,10 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class CardInstanceBaseDao {
-  static const databaseName = 'mtg-card-test-db.db';
-
   static const tableName = 'card_instance_data';
 
   @protected
-  Future<Database> getDatabase() async {
+  Future<Database> getDatabase({databaseName = 'mtg-card-db.db'}) async {
     return openDatabase(
       join(await getDatabasesPath(), databaseName),
       onCreate: (db, version) async {

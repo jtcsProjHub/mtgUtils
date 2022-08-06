@@ -28,7 +28,7 @@ class SetDbEntity {
     required this.iconSvgLocalPath,
   });
 
-  SetDbEntity.fronMap(Map<String, dynamic> map)
+  SetDbEntity.fromMap(Map<String, dynamic> map)
       : setCode = map[fieldSetCode] as String,
         setName = map[fieldSetName] as String,
         scryfallUri = map[fieldScryfallUri] as String,
