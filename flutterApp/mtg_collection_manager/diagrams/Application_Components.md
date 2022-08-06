@@ -274,14 +274,33 @@ This table has no foreign keys.
 
 I suppose I could have made the primary key the really long ID that gets returned as well, but I can't think of any benefit to doing that. Especially because cross-referencing to the card instance table would suddenly be a lot harder. Note that the app will also have a way of storing the SVG icon for the set locally, but that will be at a fixed path and follow the naming convention _<set_code>.png_. So the Kaldheim set above would be at, say, _./set_icons/KHM.svg_.
 
-## Database Interfaces
+## Database Interfaces and Translation
 The general layout here was layed out following that initial blog example I cited in one of the other documents. It feels like there are some extra classes, for sure. For instance, I'm not 100% on why there is a "tabel definition" base class, and then a DAO child class. But since this is a learning experience and I want to get to the point of loading in data and making some tests (and this is pretty new territory for me) I just stuck with it. At least it's organized.
 
-Each of the tables defined in the Tables section a set of those two classes to make the Data Access Object portion of the code. From what I've read, the intent of this class is to support all access operations. Mutations should be handled with a more structured Repository class that has a bunch of safeguards in it. From what I can tell, both operations in the layout proposed from the example is that __both__ such operations are handled by the DAOs. So not a "true" repository pattern.
+Each of the tables defined in the Tables section consists of a set of two classes to make the Data Access Object portion of the code. From what I've read, the intent of this class is to support all access operations. Mutations should be handled with a more structured Repository class that has a bunch of safeguards in it. From what I can tell, both operations in the layout proposed from the example is that __both__ such operations are handled by the DAOs. So not a "true" repository pattern. At least according to [this Microsoft article](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design).
 
 ```plantuml
 @startuml
+class SetBaseDao {}
+class SetTableDao {}
+class SetDbEntity {}
 
+class CardInstanceBaseDao {}
+class CardInstanceDao {}
+class CardInstanceDbEntity {}
+
+class CardDataBaseDao {}
+class CardDataDao {}
+class CardDbEntity {}
+
+SetBaseDao --* SetTableDao
+SetDbEntity --o SetTableDao
+CardInstanceBaseDao --* CardInstanceDao
+CardInstanceDbEntity --o CardInstanceDao
+CardDataBaseDao --* CardDataDao
+CardDbEntity --o CardDataDao
+
+class Mapper {}
 @enduml
 ```
 
