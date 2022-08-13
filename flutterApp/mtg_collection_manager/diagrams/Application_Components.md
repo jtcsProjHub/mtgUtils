@@ -301,6 +301,21 @@ CardDataBaseDao --* CardDataDao
 CardDbEntity --o CardDataDao
 
 class Mapper {}
+class MtgCard {}
+Class ScryfallCardEntity {}
+SetDbEntity --o Mapper
+CardInstanceDbEntity --o Mapper
+CardDbEntity --o Mapper
+MtgCard --o Mapper
+ScryfallCardEntity --o Mapper
+
+class QueryHandler {}
+class ScryfallApiClient {}
+Mapper --o QueryHandler
+SetTableDao --o QueryHandler
+CardInstanceDao --o QueryHandler
+CardDataDao --o QueryHandler
+ScryfallApiClient --o QueryHandler
 @enduml
 ```
 
