@@ -363,3 +363,32 @@ Or at least that's as best as I decided to try and make it in PlantUML, which fo
 This is distinctly separate from the update pathway, which is a basic principal of [CQS design](https://www.dotnetcurry.com/patterns-practices/1461/command-query-separation-cqs). Since we're trying to follow some semblance of a Repository Pattern here, all updates themselves will be driven through repository classes.
 
 ## Card Import Manager
+Realistically, I minimal "fixed" file support. I prefer the approach that Archidekt takes, where it's either a specific non-CSV file format, or you just tell it what the columns in your CSV file are. All of the other sites where you have to give it a supported CSV format are extremely annoying, as the Venn Diagram overlap between them is never where you need it to be so you end up having to use something like Google Sheets and web/API searches to try and figure out what columns you need and in what order.
+
+![Archidekt Import Interface](ArchidektImport.PNG)
+
+Even nicer is that you can tell it to outright ignore a column. The UI tells you what columns it can use, otherwise just ignore it. It's not helpful data. Like half of this documentation that is just me rambling like I'm making a blog entry on Medium.
+
+I also like that they give you a pre-generated example line based on your selection so that you can double check that what you _thought_ you selected actually was the correct thing.
+
+So I think from a UI standpoint for the import manager, the two options that I'll support for now is this option, and the "standard" MTGA format that the scanning app I use provides. Which I conveniently wrote a Python parser for in this same repo.
+
+### MTGA Format Import Option
+
+Quick feature addition note here from usage. While the card scanning Android apps are _fast_, they are only usually accurate when it comes to the card name. They are usually _very_ inaccurate when it comes to specific printing, and somewhat inaccurate when it comes to the correct set (assuming that the card name appears in multiple sets).
+
+So an option that is needed if a scanning app is providing the data, which is not needed if the data is actually coming from MTGA, is one where you can tell the import tool to "fix" the data by restricting the entries to a specific group of MTG sets.
+
+The simplest way that I can see to do this (without requiring the set database to hold data for every MTG set ahead of time) would be to assume that the list is _generally_ correct, but contains some errors. In that case, then the user can be presented with a list of just the set codes found in the data to be imported to select from.
+
+If this proves to be insufficient, then I'll consider other options like user-supplied set codes or a fully populated set database and list.
+
+### Other Import Screens
+
+Once the import tool iterates through the card list, there will inevitably be things that need some manual correction. Magic Assistant dealt with this by presenting you with a UI listing all of the items to import, and highlighted errors for you. 
+
+![Magic Assistant Import Confirmation](MagicAssistantImportCorrections.PNG)
+
+Some usability changes would be the ability filter out just the errors, and to present set ambiguities a little more clearly. I was also never quite certain if it "liked" my selection, and sometimes even after selecting an option, it would still show as having an error in the field in question.
+
+It was also unclear what the implication of what I was selecting was. MTG is a visual game, and if you can't confirm your selection matches your actual card then you have no real idea if you actually made the right choice or not.
