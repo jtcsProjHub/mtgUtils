@@ -4,6 +4,7 @@ import './screens/collection_screen.dart';
 import './screens/deck_overview_screen.dart';
 import './screens/export_screen.dart';
 import './screens/import_screen.dart';
+import 'tab_item.dart';
 import 'dart:async';
 
 // Used for limiting the size of the app, mainly so it can't get too small
@@ -61,6 +62,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _sideBarPageIndex = -1;
+  final _navigatorKeys = {
+    for (var item in TabItem.values) item: GlobalKey<NavigatorState>()
+  };
 
   Future<void> _setWindowConstraints() async {
     await DesktopWindow.setMinWindowSize(const Size(1920, 1080));
@@ -98,26 +102,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget sideBarWidget() {
+    final navItems = List<SideNavigationBarItem>.generate(
+        TabItem.values.length,
+        (index) => SideNavigationBarItem(
+            icon: tabIcons[TabItem.values[index]] ?? Icons.error,
+            label: tabName[TabItem.values[index]] ?? 'Option Data Not Found'));
     return SideNavigationBar(
       selectedIndex: _sideBarPageIndex,
-      items: const [
-        SideNavigationBarItem(
-          icon: Icons.collections,
-          label: 'Decks',
-        ),
-        SideNavigationBarItem(
-          icon: Icons.list,
-          label: 'Collection',
-        ),
-        SideNavigationBarItem(
-          icon: Icons.upload,
-          label: 'Import',
-        ),
-        SideNavigationBarItem(
-          icon: Icons.download,
-          label: 'Export',
-        ),
-      ],
+      items: navItems,
       onTap: (index) {
         setState(() {
           _sideBarPageIndex = index;
@@ -153,44 +145,3 @@ class _MyHomePageState extends State<MyHomePage> {
     ));
   }
 } // HomePage
-
-// Widget from this kind soul on StackOverflow:
-// https://stackoverflow.com/questions/49307677/how-to-get-height-of-a-widget/60868972#60868972
-// This was much easier than trying to do a Notification Listener on a resize and then
-// doing future calls for the window size library that I was trying to use.
-typedef void OnWidgetSizeChange(Size size);
-
-class MeasureSizeRenderObject extends RenderProxyBox {
-  Size? oldSize;
-  final OnWidgetSizeChange onChange;
-
-  MeasureSizeRenderObject(this.onChange);
-
-  @override
-  void performLayout() {
-    super.performLayout();
-
-    Size newSize = child!.size;
-    if (oldSize == newSize) return;
-
-    oldSize = newSize;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      onChange(newSize);
-    });
-  }
-}
-
-class MeasureSize extends SingleChildRenderObjectWidget {
-  final OnWidgetSizeChange onChange;
-
-  const MeasureSize({
-    Key? key,
-    required this.onChange,
-    required Widget child,
-  }) : super(key: key, child: child);
-
-  @override
-  RenderObject createRenderObject(BuildContext context) {
-    return MeasureSizeRenderObject(onChange);
-  }
-}
