@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import './screens/collection_screen.dart';
-import './screens/deck_overview_screen.dart';
-import './screens/export_screen.dart';
-import './screens/import_screen.dart';
+import 'tab_navigator.dart';
 import 'tab_item.dart';
 import 'dart:async';
 
@@ -12,6 +8,8 @@ import 'package:desktop_window/desktop_window.dart';
 
 // Package name is self-descriptive
 import 'package:side_navigation/side_navigation.dart';
+
+final GlobalKey<NavigatorState> topLevelNavKey = GlobalKey();
 
 void main() {
   runApp(const MyApp());
@@ -24,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: topLevelNavKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -57,11 +56,14 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState(parentKey: key);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _sideBarPageIndex = -1;
+  _MyHomePageState({required this.parentKey});
+  final Key? parentKey;
+  int _sideBarPageIndex = 0;
+  var _sideBarPageEnum = TabItem.decks;
   final _navigatorKeys = {
     for (var item in TabItem.values) item: GlobalKey<NavigatorState>()
   };
@@ -95,7 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Row(
         children: [
           sideBarWidget(),
-          Expanded(child: defaultStartScreen()),
+          Stack(
+              children: List<Widget>.generate(TabItem.values.length,
+                  (index) => _buildOffstageNavigator(TabItem.values[index]))),
         ],
       ),
     );
@@ -113,35 +117,20 @@ class _MyHomePageState extends State<MyHomePage> {
       onTap: (index) {
         setState(() {
           _sideBarPageIndex = index;
+          _sideBarPageEnum = TabItem.values[index];
         });
       },
       initiallyExpanded: true,
     );
   }
 
-  Widget defaultStartScreen() {
-    return Navigator(
-      pages: [
-        MaterialPage(child: welcomeScreen()),
-        if (_sideBarPageIndex == 2) const MaterialPage(child: ImportScreen())
-      ],
-      onPopPage: (route, result) {
-        return route.didPop(result);
-      },
-    );
-  }
-
-  Widget welcomeScreen() {
-    return const Expanded(
-        child: Center(
-      child: Text(
-        'Welcome to Magic: The Managing! Select options from the sidebar!',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontStyle: FontStyle.normal,
-          fontSize: 20,
-        ),
+  Widget _buildOffstageNavigator(TabItem tabItem) {
+    return Offstage(
+      offstage: _sideBarPageEnum != tabItem,
+      child: TabNavigator(
+        navigatorKey: _navigatorKeys[tabItem] ?? topLevelNavKey,
+        tabItem: tabItem,
       ),
-    ));
+    );
   }
 } // HomePage
