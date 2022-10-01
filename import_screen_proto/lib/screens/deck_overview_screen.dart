@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
 class DeckOverviewScreen extends StatefulWidget {
-  const DeckOverviewScreen({super.key});
+  DeckOverviewScreen({
+    super.key,
+    required this.deckPageRoute,
+  });
+
+  final String deckPageRoute;
 
   @override
   State<DeckOverviewScreen> createState() => _DeckOverviewScreenState();
 }
 
 class _DeckOverviewScreenState extends State<DeckOverviewScreen> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();

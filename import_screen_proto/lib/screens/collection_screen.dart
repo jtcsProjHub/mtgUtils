@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CollectionScreen extends StatefulWidget {
-  const CollectionScreen({super.key});
+  CollectionScreen({
+    super.key,
+    required this.collectionPageRoute,
+  });
+
+  final String collectionPageRoute;
 
   @override
   State<CollectionScreen> createState() => _CollectionScreenState();
 }
 
 class _CollectionScreenState extends State<CollectionScreen> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();

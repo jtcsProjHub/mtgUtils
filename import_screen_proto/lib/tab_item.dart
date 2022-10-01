@@ -21,16 +21,24 @@ const Map<TabItem, IconData> tabIcons = {
   TabItem.export: Icons.download,
 };
 
-const Map<TabItem, Widget> tabRootPages = {
-  TabItem.decks: DeckOverviewScreen(),
-  TabItem.collection: CollectionScreen(),
-  TabItem.import: ImportScreen(),
-  TabItem.export: ExportScreen(),
-};
-
 const Map<TabItem, String> routeName = {
-  TabItem.decks: '/',
+  TabItem.decks: '/Decks',
   TabItem.collection: '/Collection',
   TabItem.import: '/Import',
   TabItem.export: '/Export',
+};
+
+Map<TabItem, Widget> tabRootPages = {
+  TabItem.decks: DeckOverviewScreen(
+    deckPageRoute: routeName[TabItem.decks]!,
+  ),
+  TabItem.collection: CollectionScreen(
+    collectionPageRoute: routeName[TabItem.collection]!,
+  ),
+  TabItem.import: ImportScreen(
+    importPageRoute: routeName[TabItem.import]!,
+  ),
+  TabItem.export: ExportScreen(
+    exportPageRoute: routeName[TabItem.export]!,
+  ),
 };
