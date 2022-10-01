@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'tab_navigator.dart';
-import 'tab_item.dart';
 import 'dart:async';
+
+import 'package:import_screen_proto/screens/import_screen.dart';
 
 // Used for limiting the size of the app, mainly so it can't get too small
 import 'package:desktop_window/desktop_window.dart';
-
-// Package name is self-descriptive
-import 'package:side_navigation/side_navigation.dart';
-
-final GlobalKey<NavigatorState> topLevelNavKey = GlobalKey();
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +17,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: topLevelNavKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -56,17 +50,11 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState(parentKey: key);
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  _MyHomePageState({required this.parentKey});
-  final Key? parentKey;
-  int _sideBarPageIndex = 0;
-  var _sideBarPageEnum = TabItem.decks;
-  final _navigatorKeys = {
-    for (var item in TabItem.values) item: GlobalKey<NavigatorState>()
-  };
+  _MyHomePageState();
 
   Future<void> _setWindowConstraints() async {
     await DesktopWindow.setMinWindowSize(const Size(1920, 1080));
@@ -94,43 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Row(
-        children: [
-          sideBarWidget(),
-          Stack(
-              children: List<Widget>.generate(TabItem.values.length,
-                  (index) => _buildOffstageNavigator(TabItem.values[index]))),
-        ],
-      ),
-    );
-  }
-
-  Widget sideBarWidget() {
-    final navItems = List<SideNavigationBarItem>.generate(
-        TabItem.values.length,
-        (index) => SideNavigationBarItem(
-            icon: tabIcons[TabItem.values[index]] ?? Icons.error,
-            label: tabName[TabItem.values[index]] ?? 'Option Data Not Found'));
-    return SideNavigationBar(
-      selectedIndex: _sideBarPageIndex,
-      items: navItems,
-      onTap: (index) {
-        setState(() {
-          _sideBarPageIndex = index;
-          _sideBarPageEnum = TabItem.values[index];
-        });
-      },
-      initiallyExpanded: true,
-    );
-  }
-
-  Widget _buildOffstageNavigator(TabItem tabItem) {
-    return Offstage(
-      offstage: _sideBarPageEnum != tabItem,
-      child: TabNavigator(
-        navigatorKey: _navigatorKeys[tabItem] ?? topLevelNavKey,
-        tabItem: tabItem,
-      ),
+      body: ImportScreen(),
     );
   }
 } // HomePage

@@ -15,6 +15,8 @@ class _ImportScreenState extends State<ImportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Expanded(child: Center(child: Text('I am the import screen')));
+    return const Center(
+      child: Text('I am the import screen'),
+    );
   }
 }
