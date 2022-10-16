@@ -67,29 +67,38 @@ class _ImportScreenState extends State<ImportScreen> {
   List<Widget> csvColumnDropDowns() {
     var dropDownList = List<Widget>.generate(
         _csvColumnsSelected.length,
-        (index) => DropdownButton<String>(
-              value: _csvColumnsSelected[index],
-              icon: const Icon(Icons.file_copy_rounded),
-              elevation: 16,
-              style: const TextStyle(color: Colors.red),
-              underline: Container(
-                height: 2,
-                color: Colors.redAccent,
-              ),
-              onChanged: (String? value) {
-                // This is called when the user selects an item.
-                setState(() {
-                  _csvColumnsSelected[index] = value!;
-                });
-              },
-              items: _supportColumnTypes
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ));
+        (index) => Padding(
+            padding: EdgeInsets.all(4.0),
+            child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                    color: Colors.blueGrey[50],
+                    borderRadius: BorderRadius.circular(10)),
+
+                // dropdown below..
+                child: DropdownButton<String>(
+                  value: _csvColumnsSelected[index],
+                  icon: const Icon(Icons.file_copy_rounded),
+                  elevation: 16,
+                  style: const TextStyle(color: Colors.blue),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.blueAccent,
+                  ),
+                  onChanged: (String? value) {
+                    // This is called when the user selects an item.
+                    setState(() {
+                      _csvColumnsSelected[index] = value!;
+                    });
+                  },
+                  items: _supportColumnTypes
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ))));
     return dropDownList;
   } // end csvColumnDropDowns
 
@@ -98,62 +107,91 @@ class _ImportScreenState extends State<ImportScreen> {
     // Define all the components first so that the definition is clean
     // This dropdown menu will let the user specify what import type they
     // are looking to perform. The intent is not to support many options here.
-    var fileTypeDropDown = DropdownButton<String>(
-      value: _selectedFileType,
-      icon: const Icon(Icons.file_copy_rounded),
-      elevation: 16,
-      style: const TextStyle(color: Colors.red),
-      underline: Container(
-        height: 2,
-        color: Colors.redAccent,
-      ),
-      onChanged: (String? value) {
-        // This is called when the user selects an item.
-        setState(() {
-          _selectedFileType = value!;
-        });
-      },
-      items: _supportFileTypes.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+    var commonWidgetLabelTextStyle = const TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+      fontSize: 15,
     );
+
+    var fileTypeDropDown = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: const BoxDecoration(
+            border: Border(
+                top: BorderSide(color: Colors.black, width: 2),
+                bottom: BorderSide(color: Colors.black, width: 2))),
+        child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                    color: Colors.blueGrey[50],
+                    borderRadius: BorderRadius.circular(10)),
+
+                // dropdown below..
+                child: DropdownButton<String>(
+                  value: _selectedFileType,
+                  icon: const Icon(Icons.file_copy_rounded),
+                  elevation: 16,
+                  style: const TextStyle(color: Colors.blue),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.blueAccent,
+                  ),
+                  onChanged: (String? value) {
+                    // This is called when the user selects an item.
+                    setState(() {
+                      _selectedFileType = value!;
+                    });
+                  },
+                  items: _supportFileTypes
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ))));
 
     // These are stacked buttons that will be at the front of the row of column
     // selection dropdowns for the CSV file data
-    var addRemoveButtons = Column(
-      children: [
-        Tooltip(
-            message: 'Adds a column selection to the end.',
-            waitDuration: const Duration(seconds: 1),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // Adds a column selection option for a CSV file
-                setState(() {
-                  _csvColumnsSelected.add(_supportColumnTypes.first);
-                });
-              },
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text("Add column"),
-            )),
-        Tooltip(
-            message: 'Removes the last column in the list.',
-            waitDuration: const Duration(seconds: 1),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // Removes the last CSV column in the list
-                if (_csvColumnsSelected.isEmpty) return;
-                setState(() {
-                  _csvColumnsSelected.removeLast();
-                });
-              },
-              icon: const Icon(Icons.remove, size: 18),
-              label: const Text("Remove column"),
-            ))
-      ],
-    );
+    var addRemoveButtons = Padding(
+        padding: EdgeInsets.all(4.0),
+        child: Column(
+          children: [
+            Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Tooltip(
+                    message: 'Adds a column selection to the end.',
+                    waitDuration: const Duration(seconds: 1),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // Adds a column selection option for a CSV file
+                        setState(() {
+                          _csvColumnsSelected.add(_supportColumnTypes.first);
+                        });
+                      },
+                      icon: const Icon(Icons.add, size: 18),
+                      label: const Text("Add column"),
+                    ))),
+            Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Tooltip(
+                    message: 'Removes the last column in the list.',
+                    waitDuration: const Duration(seconds: 1),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // Removes the last CSV column in the list
+                        if (_csvColumnsSelected.isEmpty) return;
+                        setState(() {
+                          _csvColumnsSelected.removeLast();
+                        });
+                      },
+                      icon: const Icon(Icons.remove, size: 18),
+                      label: const Text("Remove column"),
+                    )))
+          ],
+        ));
 
     String csvExampleText = '';
     _csvColumnsSelected.forEach((selection) {
@@ -167,38 +205,73 @@ class _ImportScreenState extends State<ImportScreen> {
 
     // Use our handy utility function above to generate all of the necessary dropdown menus for us
     List<Widget> csvDropDownsRowWidgets = csvColumnDropDowns();
-    csvDropDownsRowWidgets.insert(0, const Text("CSV Columns: "));
+    csvDropDownsRowWidgets.insert(
+        0,
+        Text(
+          "CSV Columns: ",
+          style: commonWidgetLabelTextStyle,
+        ));
     csvDropDownsRowWidgets.add(addRemoveButtons);
-    var csvDropDownRowRow = Row(children: csvDropDownsRowWidgets);
+    var csvDropDownRowRow = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: const BoxDecoration(
+            border: Border(
+                top: BorderSide(color: Colors.black, width: 2),
+                bottom: BorderSide(color: Colors.black, width: 2))),
+        child: Row(children: csvDropDownsRowWidgets));
 
     // We now have all of the major elements defined that have any sort of complexity associated with them, so now
     // we'll assemble the main page widget.
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("File Type"),
-        fileTypeDropDown,
-        if (_selectedFileType == 'CSV') ...[
-          const Text("File details"),
-          csvDropDownRowRow,
-          const Text("Make sure lines in your file are arranged like this:"),
-          Text(csvExampleText),
-        ] else ...[
-          const Text("Lines in your file should look like this:"),
-          const Text(
-              "1 Tranquil Cove (NEO) 280\n1 Swiftwater Cliffs (NEO) 277\n1 Naomi, Pillar of Order (NEO) 229"),
-        ],
-        Tooltip(
-            message: 'Kicks off the import process on the specified data',
-            waitDuration: const Duration(seconds: 1),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Code to add a CSV column
-              },
-              icon: const Icon(Icons.upload, size: 18),
-              label: const Text("Import Data Go!"),
-            )),
-      ],
-    );
+    return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "File Type",
+              style: commonWidgetLabelTextStyle,
+            ),
+            fileTypeDropDown,
+            if (_selectedFileType == 'CSV') ...[
+              Padding(
+                  padding: const EdgeInsetsDirectional.only(top: 20.0),
+                  child: Text(
+                    "File details",
+                    style: commonWidgetLabelTextStyle,
+                  )),
+              csvDropDownRowRow,
+              const Padding(
+                  padding: EdgeInsetsDirectional.only(top: 20.0),
+                  child: Text(
+                    "Make sure lines in your file are arranged like this:",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
+              Padding(
+                  padding: const EdgeInsetsDirectional.only(bottom: 20.0),
+                  child: Text(csvExampleText,
+                      style: const TextStyle(fontWeight: FontWeight.w600))),
+            ] else ...[
+              const Padding(
+                  padding: EdgeInsetsDirectional.only(top: 20.0),
+                  child: Text("Lines in your file should look like this:",
+                      style: TextStyle(fontWeight: FontWeight.bold))),
+              const Padding(
+                  padding: EdgeInsetsDirectional.only(bottom: 20.0),
+                  child: Text(
+                      "1 Tranquil Cove (NEO) 280\n1 Swiftwater Cliffs (NEO) 277\n1 Naomi, Pillar of Order (NEO) 229",
+                      style: TextStyle(fontWeight: FontWeight.w600))),
+            ],
+            Tooltip(
+                message: 'Kicks off the import process on the specified data',
+                waitDuration: const Duration(seconds: 1),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Code to actually send data to the import layer
+                  },
+                  icon: const Icon(Icons.upload, size: 18),
+                  label: const Text("Import Data Go!"),
+                )),
+          ],
+        ));
   } // end importPrefsAndData
 }
