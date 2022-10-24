@@ -19,6 +19,12 @@ class _ImportScreenState extends State<ImportScreen> {
   // Selection from the dropdown on what file type the user is importing
   String _selectedFileType = '';
 
+  final _commonWidgetLabelTextStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+    fontSize: 15,
+  );
+
   // For CSV files, there is a row of dropdown menus that each allow the user to select what field is actually in that column.
   // These are the different columns this program allows.
   final List<String> _supportColumnTypes = <String>[
@@ -43,7 +49,7 @@ class _ImportScreenState extends State<ImportScreen> {
   };
 
   // List of columns that the user has selected. It is initialized with the default set of values.
-  List<String> _csvColumnsSelected = <String>[
+  final List<String> _csvColumnsSelected = <String>[
     'Quantity',
     'Name',
     'Set Code',
@@ -68,9 +74,10 @@ class _ImportScreenState extends State<ImportScreen> {
     var dropDownList = List<Widget>.generate(
         _csvColumnsSelected.length,
         (index) => Padding(
-            padding: EdgeInsets.all(4.0),
+            padding: const EdgeInsets.all(4.0),
             child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                     color: Colors.blueGrey[50],
                     borderRadius: BorderRadius.circular(10)),
@@ -102,17 +109,53 @@ class _ImportScreenState extends State<ImportScreen> {
     return dropDownList;
   } // end csvColumnDropDowns
 
+  // Used to make the "enforce set selection" checkbox and label, including any formatting
+  // needed for it to not look out of place or weird.
+  // Why yes, all of this code is indeed required for those two little elements
+  Widget fancyCheckBox() {
+    // This part here will make the checkbox fancy and like "the people" would expect from a high-quality
+    // thrown-together-at-random-times app like this one.
+    Color getColor(Set<MaterialState> states) {
+      const Set<MaterialState> interactiveStates = <MaterialState>{
+        MaterialState.pressed,
+        MaterialState.hovered,
+        MaterialState.focused,
+      };
+      if (states.any(interactiveStates.contains)) {
+        return Colors.red;
+      }
+      return Colors.blue;
+    }
+
+    return Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Row(
+          children: [
+            Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: Checkbox(
+                  checkColor: Colors.white,
+                  fillColor: MaterialStateProperty.resolveWith(getColor),
+                  value: _useSetImportLimits,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _useSetImportLimits = value!;
+                    });
+                  },
+                )),
+            Text(
+              "Enforce certain sets if able?",
+              style: _commonWidgetLabelTextStyle,
+            ),
+          ],
+        ));
+  }
+
   // This is the main widget for the screen itself.
   Widget importPrefsAndData() {
     // Define all the components first so that the definition is clean
     // This dropdown menu will let the user specify what import type they
     // are looking to perform. The intent is not to support many options here.
-    var commonWidgetLabelTextStyle = const TextStyle(
-      fontWeight: FontWeight.bold,
-      color: Colors.black,
-      fontSize: 15,
-    );
-
     var fileTypeDropDown = Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: const BoxDecoration(
@@ -156,11 +199,11 @@ class _ImportScreenState extends State<ImportScreen> {
     // These are stacked buttons that will be at the front of the row of column
     // selection dropdowns for the CSV file data
     var addRemoveButtons = Padding(
-        padding: EdgeInsets.all(4.0),
+        padding: const EdgeInsets.all(4.0),
         child: Column(
           children: [
             Padding(
-                padding: EdgeInsets.all(4.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Tooltip(
                     message: 'Adds a column selection to the end.',
                     waitDuration: const Duration(seconds: 1),
@@ -175,7 +218,7 @@ class _ImportScreenState extends State<ImportScreen> {
                       label: const Text("Add column"),
                     ))),
             Padding(
-                padding: EdgeInsets.all(4.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Tooltip(
                     message: 'Removes the last column in the list.',
                     waitDuration: const Duration(seconds: 1),
@@ -209,9 +252,11 @@ class _ImportScreenState extends State<ImportScreen> {
         0,
         Text(
           "CSV Columns: ",
-          style: commonWidgetLabelTextStyle,
+          style: _commonWidgetLabelTextStyle,
         ));
     csvDropDownsRowWidgets.add(addRemoveButtons);
+
+    // Frame out the row of CSV buttons
     var csvDropDownRowRow = Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: const BoxDecoration(
@@ -229,7 +274,7 @@ class _ImportScreenState extends State<ImportScreen> {
           children: [
             Text(
               "File Type",
-              style: commonWidgetLabelTextStyle,
+              style: _commonWidgetLabelTextStyle,
             ),
             fileTypeDropDown,
             if (_selectedFileType == 'CSV') ...[
@@ -237,7 +282,7 @@ class _ImportScreenState extends State<ImportScreen> {
                   padding: const EdgeInsetsDirectional.only(top: 20.0),
                   child: Text(
                     "File details",
-                    style: commonWidgetLabelTextStyle,
+                    style: _commonWidgetLabelTextStyle,
                   )),
               csvDropDownRowRow,
               const Padding(
@@ -271,6 +316,7 @@ class _ImportScreenState extends State<ImportScreen> {
                   icon: const Icon(Icons.upload, size: 18),
                   label: const Text("Import Data Go!"),
                 )),
+            fancyCheckBox(),
           ],
         ));
   } // end importPrefsAndData
