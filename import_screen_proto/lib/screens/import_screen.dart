@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:convert';
+import 'package:convert/convert.dart';
 
 class ImportScreen extends StatefulWidget {
   const ImportScreen({super.key});
@@ -18,6 +21,7 @@ class _ImportScreenState extends State<ImportScreen> {
   final List<String> _supportFileTypes = <String>['MTGA', 'CSV'];
   // Selection from the dropdown on what file type the user is importing
   String _selectedFileType = '';
+  String _fileLoaded = '';
 
   final _commonWidgetLabelTextStyle = const TextStyle(
     fontWeight: FontWeight.bold,
@@ -306,13 +310,26 @@ class _ImportScreenState extends State<ImportScreen> {
                       "1 Tranquil Cove (NEO) 280\n1 Swiftwater Cliffs (NEO) 277\n1 Naomi, Pillar of Order (NEO) 229",
                       style: TextStyle(fontWeight: FontWeight.w600))),
             ],
+            Padding(
+                padding: EdgeInsetsDirectional.only(bottom: 20.0),
+                child: Tooltip(
+                    message: 'Pick the file from your local machine.',
+                    waitDuration: const Duration(seconds: 1),
+                    child: ElevatedButton.icon(
+                      onPressed: () => _selectImportFile(),
+                      icon: const Icon(Icons.save, size: 18),
+                      label: const Text("Select file..."),
+                    ))),
+            if (_importFileContents.isNotEmpty) ...[
+              _importFilePreview(),
+            ],
             Tooltip(
                 message: 'Kicks off the import process on the specified data',
                 waitDuration: const Duration(seconds: 1),
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Code to actually send data to the import layer
-                  },
+                  onPressed: _importFileContents.isEmpty
+                      ? null
+                      : () => _processImportFile(),
                   icon: const Icon(Icons.upload, size: 18),
                   label: const Text("Import Data Go!"),
                 )),
@@ -320,4 +337,32 @@ class _ImportScreenState extends State<ImportScreen> {
           ],
         ));
   } // end importPrefsAndData
+
+  Widget _importFilePreview() {
+    String sampleText = "File loaded: $_fileLoaded\n";
+    sampleText += "Total Entries Loaded: ${_importFileContents.length}\n";
+    sampleText += "Sample line from file: ${_importFileContents[0]}";
+
+    return Padding(
+        padding: const EdgeInsetsDirectional.only(bottom: 20.0),
+        child: Text(sampleText,
+            style: const TextStyle(fontWeight: FontWeight.w600)));
+  }
+
+  void _processImportFile() {}
+  void _selectImportFile() async {
+    // Lets the user pick one file; files with any file extension can be selected
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.any, withData: true);
+
+    // The result will be null, if the user aborted the dialog
+    if (result == null) return;
+
+    PlatformFile file = result.files.first;
+    String fileContent = String.fromCharCodes(file.bytes as Iterable<int>);
+    setState(() {
+      _importFileContents = fileContent.split('\n');
+      _fileLoaded = file.name;
+    });
+  }
 }

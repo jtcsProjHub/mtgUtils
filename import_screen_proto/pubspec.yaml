@@ -39,6 +39,8 @@ dependencies:
   desktop_window: ^0.4.0
   scryfall_api: ^1.0.0
   side_navigation: ^1.0.2
+  file_picker: ^5.2.2
+  convert: ^3.1.1
 
 dev_dependencies:
   flutter_test:
