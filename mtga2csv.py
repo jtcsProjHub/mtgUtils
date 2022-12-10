@@ -93,7 +93,21 @@ print("Read " + str(len(contents)) + " unique entries.")
 csvOutputFile = prepCsvFile(file_path)
 if csvOutputFile == -1:
     os._exit(0)
-
+    
+# Attempt to open the set_prefs.json file
+useSetPrefs = False
+try:
+    setPrefs = json.loads(open('set_prefs.json', "r").read())
+    setPrefs = setPrefs["set_prefs"]
+    if len(setPrefs):
+        useSetPrefs = True
+        print("Using the following set preferences:")
+        for setCode in setPrefs:
+            print(setCode)
+except Exception as e:
+    print("File set_prefs.json not found, or the format is invalid. Data will be converted as-is.")
+    print(e)
+    
 # Look through each of the lines in the file and attempt to parse it. The format is
 # annoying and doesn't have a specific repeated delineator.
 # Example: 1 Tranquil Cove (NEO) 213
