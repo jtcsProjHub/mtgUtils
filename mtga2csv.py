@@ -1,14 +1,13 @@
 import csv
 import json
-import time
-import itertools
 import os
 import re
+import time
+from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog
 import requests
-
-SetNamesFromIds = {}
+from requests_toolbelt.utils import dump
 
 # Opens up a CSV file in the same path and name as what's passed into it.
 # Tacks on a .csv extension for good measure.
@@ -18,65 +17,54 @@ def prepCsvFile(filePathAndName):
     except:
         print("Error opening CSV file. Check permissions.")
         return -1
-    
+
     csvResults = csv.writer(csvfile, delimiter=',')
-    
-    # Prepare to write out the DeckBox Inventory CSV format
-    # Count,Tradelist Count,Name,Foil,Textless,Promo,Signed,Edition,Condition,Language,Card Number
-    csvHeader = ["Count","Tradelist Count","Name","Foil","Textless","Promo","Signed","Edition","Condition","Language","Card Number"]
+
+    # Prepare to write out the DeckStats CSV format
+    # amount,card_name,is_foil,is_pinned,is_signed,set_id,set_code,collector_number,language,condition,comment,added
+    #csvHeader = ["amount","card_name","is_foil","is_pinned","is_signed","set_id","set_code","collector_number","language","condition","comment","added"]
+    #Folder Name,Quantity,Trade Quantity,Card Name,Set Code,Set Name,Card Number,Condition,Printing,Language,Price Bought,Date Bought
+    csvHeader = ["Folder Name","Quantity","Trade Quantity","Card Name","Set Code","Set Name","Card Number","Condition","Printing","Language","Price Bought","Date Bought"]
     csvResults.writerow(csvHeader)
     return csvResults
 
-# Grab the full set of card details from Scryfall using their API
-# It's a bit specific so we make sure that the header is forced to
-# indicate that it has a JSON payload
-def getFullCardDetails(cardName, setId, cardCollectionId):
-    httpHeaders = {"Content-Type": "application/json"}
-    scryfallQuery = json.dumps({'identifiers':[{'name': cardName}, {'set': setId, 'collector_number': cardCollectionId}]})
-    r = requests.post('https://api.scryfall.com/cards/collection', headers=httpHeaders, data=scryfallQuery)
+# Grab all of the prints of a card with a specific name. Orders them newest to oldest
+def get_all_prints_of_name(card_name):
+    # Make sure that we're rate limiting ourselves. Putting the sleep at the top of all functions that perform API requests
     time.sleep(0.1)
-    if r.status_code == 200:
-        jsonPayload = json.loads(r.text)
-        #print(json.dumps(jsonPayload, indent=2))
-        return jsonPayload
-    else:
-        print('Error with query for card ' + tokens[1] + '. Returned code ' + str(r.status_code))
-        return json.loads("\{\}")
-    
-def getSetNameFromCode(setCode):
-    r = requests.get('https://api.scryfall.com/sets/' + str(setCode))
-    time.sleep(0.1)
-    if r.status_code == 200:
-        jsonPayload = json.loads(r.text)
-        if 'name' in jsonPayload:
-            setName = jsonPayload['name']
-            SetNamesFromIds[setCode] = setName
-            return setName
-        else:
-            print("Error, name not found for set " + setCode + ". Keeping as the set code.")
-            return setCode
-    else:
-        print("Error retrieving set name using code. Received error " + str(r.status_code) + ". Setting name as set code.")
+    request_params = {'unique': 'prints', 'order': 'released', 'include_extras': 'true', 'dir': 'desc', 'q': card_name}
+    response = requests.get('https://api.scryfall.com/cards/search', params=request_params)
+    if response.status_code != 200:
+        data = dump.dump_all(response)
+        print(data.decode('utf-8'))
+        return []
+    response_json = response.json()
+    return response_json["data"]
 
 def csvLineWrite(cardData, csvFile):
-    # Count,Tradelist Count,Name,Foil,Textless,Promo,Signed,Edition,Condition,Language,Card Number
+    # amount,card_name,is_foil,is_pinned,is_signed,set_id,set_code,collector_number,language,condition,comment,added
     # cardData = {'cardQuantity': '', 'cardName': '', 'cardSetId': '', 'cardSetNumber': ''}
-    tradelistCount = 0
     foil = ''
-    textless = ''
-    promo = ''
+    is_pinned = ''
     signed = ''
-    cardCondition = ''
-    cardLanguage = 'English'
-    setName = cardData['cardSetId']
-    
-    if cardData['cardSetId'] in SetNamesFromIds:
-        setName = SetNamesFromIds[setName]
-    else:
-        setName = getSetNameFromCode(setName)
-    
-    csvFile.writerow([cardData['cardQuantity'], tradelistCount, cardData['cardName'],\
-    foil, textless, promo,signed, setName, cardCondition, cardLanguage, cardData['cardSetNumber']])
+    setUID = ''
+    cardCondition = 'NM'
+    cardLanguage = 'en'
+    cardSetCode = cardData['cardSetId'].upper()
+    if cardSetCode not in setPrefs:
+        # Looks through all of the prints of a card with the specified name to find the one with the correct printing
+        card_list = get_all_prints_of_name(card_name=cardData['cardName'])
+        
+        # Iterate through the cards, newest to oldest
+        for card in card_list:
+            if card["set"].upper() in setPrefs:
+                print("Found correction for " + cardData['cardName'] + ". Changing from " + cardSetCode + " to " + card["set"].upper())
+                cardSetCode = card["set"].upper()
+                cardData['cardSetNumber'] = card["collector_number"]
+                break
+
+    csvFile.writerow([cardData['cardQuantity'], cardData['cardName'], foil, is_pinned, signed, setUID\
+        , cardSetCode, cardData['cardSetNumber'], cardLanguage, cardCondition,'',''])
 
 # Open the reference file from disk. This is intended to be an
 # MTGA formatted text file, but no checks are done here.
@@ -93,7 +81,23 @@ print("Read " + str(len(contents)) + " unique entries.")
 csvOutputFile = prepCsvFile(file_path)
 if csvOutputFile == -1:
     os._exit(0)
-
+    
+   
+# Attempt to open the set_prefs.json file
+useSetPrefs = False
+try:
+    setPrefs = json.loads(open('set_prefs.json', "r").read())
+    setPrefs = setPrefs["set_prefs"]
+    if len(setPrefs):
+        useSetPrefs = True
+        setPrefs = [x.upper() for x in setPrefs]
+        print("Using the following set preferences:")
+        for setCode in setPrefs:
+            print(setCode)
+except Exception as e:
+    print("File set_prefs.json not found, or the format is invalid. Data will be converted as-is.")
+    print(e)
+    
 # Look through each of the lines in the file and attempt to parse it. The format is
 # annoying and doesn't have a specific repeated delineator.
 # Example: 1 Tranquil Cove (NEO) 213
@@ -106,6 +110,5 @@ for cardEntry in contents:
     for (delimeter, key) in zip(delimeters, tokens):
         pair = re.split(delimeter,pair[1], maxsplit=1)
         tokens[key] = pair[0].strip()
-        
     tokens['cardSetNumber'] = pair[1].strip()
-    csvLineWrite(tokens, csvOutputFile)    
+    csvLineWrite(tokens, csvOutputFile)
