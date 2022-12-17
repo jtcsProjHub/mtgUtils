@@ -64,7 +64,7 @@ def csvLineWrite(cardData, csvFile):
                 break
 
     csvFile.writerow([cardData['cardQuantity'], cardData['cardName'], foil, is_pinned, signed, setUID\
-        , cardData['cardSetId'], cardData['cardSetNumber'], cardLanguage, cardCondition,'',''])
+        , cardSetCode, cardData['cardSetNumber'], cardLanguage, cardCondition,'',''])
 
 # Open the reference file from disk. This is intended to be an
 # MTGA formatted text file, but no checks are done here.
