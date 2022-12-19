@@ -22,9 +22,7 @@ def prepCsvFile(filePathAndName):
 
     # Prepare to write out the DeckStats CSV format
     # amount,card_name,is_foil,is_pinned,is_signed,set_id,set_code,collector_number,language,condition,comment,added
-    #csvHeader = ["amount","card_name","is_foil","is_pinned","is_signed","set_id","set_code","collector_number","language","condition","comment","added"]
-    #Folder Name,Quantity,Trade Quantity,Card Name,Set Code,Set Name,Card Number,Condition,Printing,Language,Price Bought,Date Bought
-    csvHeader = ["Folder Name","Quantity","Trade Quantity","Card Name","Set Code","Set Name","Card Number","Condition","Printing","Language","Price Bought","Date Bought"]
+    csvHeader = ["amount","card_name","is_foil","is_pinned","is_signed","set_id","set_code","collector_number","language","condition","comment","added"]
     csvResults.writerow(csvHeader)
     return csvResults
 
@@ -51,7 +49,7 @@ def csvLineWrite(cardData, csvFile):
     cardCondition = 'NM'
     cardLanguage = 'en'
     cardSetCode = cardData['cardSetId'].upper()
-    if cardSetCode not in setPrefs:
+    if useSetPrefs and cardSetCode not in setPrefs:
         # Looks through all of the prints of a card with the specified name to find the one with the correct printing
         card_list = get_all_prints_of_name(card_name=cardData['cardName'])
         
