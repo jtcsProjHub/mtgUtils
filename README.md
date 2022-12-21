@@ -13,11 +13,25 @@ Before launching, check the file _set_prefs.json_ to make sure that either your 
 
 When you launch the script, a TK file dialog window will open for you to select your MTGA file from. Once you click 'open' the script will chug away and populate the CSV file in the DeckStats format, which has the following headers and general format:
 
-'''
+```
 amount,card_name,is_foil,is_pinned,is_signed,set_id,set_code,collector_number,language,condition,comment,added
 4,Abzan Charm,,,,,KTK,161,en,NM,,
 1,Abzan Falconer,,,,,KTK,2,en,NM,,
 1,Academy Ruins,,,,,2XM,,,,,
-'''
+```
 
 It will assume the language is english and everything is in NM condition.
+
+## Dragon2Moxfield.py
+Like the mtga converter, it's not fancy. This script rearranges the columns and makes the correct reformatting changes to go from the Dragon Shield to the Moxfield standard. For instance, Mox wants the set codes in lowercase, designates foils differently, and does weird things with the names of tokens where MTG overloaded the name. By the way, fun fact, the 'unique name' rule doesn't apply to tokens between sets, only within a given token set. Something I'll have to consider for my Flutter app if I decide to support token imports.
+
+When you launch the script, a TK file dialog window will open for you to select your Dragon Shield CSV file from. Once you click 'open' the script will chug away and populate the CSV file in the Moxfield format, which has the following headers and general format:
+
+```
+Count,Name,Edition,Condition,Language,Foil,Collector Number
+1,Ambush Party,hml,Near Mint,English,,63b
+1,Anaba Shaman,hml,Near Mint,English,,67a
+1,Animate Dead,3ed,Near Mint,English,,93
+2,Argivian Blacksmith,atq,Near Mint,English,,2
+```
+It retains the language designation from the DS file and assumes everything is in Near Mint condition.
