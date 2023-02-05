@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 import 'package:convert/convert.dart';
+import 'package:import_screen_proto/constants.dart';
 
 class ImportScreen extends StatefulWidget {
   const ImportScreen({super.key});
@@ -32,32 +33,32 @@ class _ImportScreenState extends State<ImportScreen> {
   // For CSV files, there is a row of dropdown menus that each allow the user to select what field is actually in that column.
   // These are the different columns this program allows.
   final List<String> _supportColumnTypes = <String>[
-    'SKIP',
-    'Quantity',
-    'Name',
-    'Set Code',
-    'Set Name',
-    'Collector ID',
-    'Multiverse ID'
+    HEADING_SKIP,
+    HEADING_QUANTITY,
+    HEADING_NAME,
+    HEADING_SET_CODE,
+    HEADING_SET_NAME,
+    HEADING_COLLECTOR_ID,
+    HEADING_MULTIVERSE_ID
   ];
 
   // Show the user an example of what they selected, so they can do a quick visual check against what their file looks like
   final Map<String, String> _csvExampleFields = {
-    'SKIP': '<skipped>',
-    'Quantity': '5',
-    'Name': "Tranquil Cove",
-    'Set Code': "NEO",
-    'Set Name': "Kamigawa: Neon Dynasty",
-    'Collector ID': "280",
-    'Multiverse ID': "548593",
+    HEADING_SKIP: '<skipped>',
+    HEADING_QUANTITY: '5',
+    HEADING_NAME: "Tranquil Cove",
+    HEADING_SET_CODE: "NEO",
+    HEADING_SET_NAME: "Kamigawa: Neon Dynasty",
+    HEADING_COLLECTOR_ID: "280",
+    HEADING_MULTIVERSE_ID: "548593",
   };
 
   // List of columns that the user has selected. It is initialized with the default set of values.
   final List<String> _csvColumnsSelected = <String>[
-    'Quantity',
-    'Name',
-    'Set Code',
-    'Collector ID'
+    HEADING_QUANTITY,
+    HEADING_NAME,
+    HEADING_SET_CODE,
+    HEADING_COLLECTOR_ID
   ];
 
   @override
