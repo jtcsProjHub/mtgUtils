@@ -105,8 +105,11 @@ for cardEntry in contents:
     tokens = {'cardQuantity': '', 'cardName': '', 'cardSetId': '', 'cardSetNumber': ''}
     delimeters = [" ", "\(", "\)"]
     pair = ["", cardEntry]
-    for (delimeter, key) in zip(delimeters, tokens):
-        pair = re.split(delimeter,pair[1], maxsplit=1)
-        tokens[key] = pair[0].strip()
-    tokens['cardSetNumber'] = pair[1].strip()
-    csvLineWrite(tokens, csvOutputFile)
+    try:
+        for (delimeter, key) in zip(delimeters, tokens):
+            pair = re.split(delimeter,pair[1], maxsplit=1)
+            tokens[key] = pair[0].strip()
+        tokens['cardSetNumber'] = pair[1].strip()
+        csvLineWrite(tokens, csvOutputFile)
+    except IndexError:
+        print("Unable to parse entry: " + cardEntry)
