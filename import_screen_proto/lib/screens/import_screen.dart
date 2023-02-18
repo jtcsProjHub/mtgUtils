@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 import 'package:convert/convert.dart';
 import 'package:import_screen_proto/constants.dart';
+import 'package:import_screen_proto/widgets/full_set_list.dart';
 
 class ImportScreen extends StatefulWidget {
   const ImportScreen({super.key});
@@ -73,6 +74,8 @@ class _ImportScreenState extends State<ImportScreen> {
   Widget build(BuildContext context) {
     return importPrefsAndData();
   }
+
+  final Widget _mtgFullSetListScroll = const FullSetList();
 
   // Function that generates and returns the list of dropdown boxes that indicate all of the columns in the CSV
   List<Widget> csvColumnDropDowns() {
@@ -335,6 +338,9 @@ class _ImportScreenState extends State<ImportScreen> {
                   label: const Text("Import Data Go!"),
                 )),
             fancyCheckBox(),
+            if (_useSetImportLimits) ...[
+              _mtgFullSetListScroll,
+            ],
           ],
         ));
   } // end importPrefsAndData

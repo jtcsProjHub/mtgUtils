@@ -8,7 +8,7 @@ and interacting with Scryfall to create the appropriate objects */
 import "package:import_screen_proto/scryfall_singleton.dart";
 
 class ProcessFileDataToObject {
-  var _scryfallSingleton = new ScryfallSingleton();
+  final _scryfallSingleton = ScryfallSingleton();
 
   // The MTGA format is weird, but specific. It annoyingly doesn't have a single
   // delimiter or consistent pattern, so you have to have something like a
