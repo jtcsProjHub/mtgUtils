@@ -1,12 +1,11 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:import_screen_proto/scryfall_singleton.dart';
 import 'package:scryfall_api/scryfall_api.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class FullSetList extends StatefulWidget {
-  const FullSetList({super.key});
+  FullSetList({super.key});
 
   @override
   State<FullSetList> createState() => _FullSetListState();
@@ -21,6 +20,7 @@ class _FullSetListState extends State<FullSetList> {
 
   // These are going to be strings of the indices. Easier that way.
   List<String> _selectedSets = [];
+  List<String> selectedSetCodes = [];
 
   @override
   void initState() {
@@ -60,12 +60,14 @@ class _FullSetListState extends State<FullSetList> {
     return setList;
   }
 
-  // Actually builds out the scrollable list from the paginated set data
+  // Actually builds out the scrollable list of all sets from the paginated set data
   Widget _buildListView(PaginableList<MtgSet> setData) {
     _fullSetData = setData;
+    selectedSetCodes = [];
+
     Widget scrollableList = Container(
-        height: 500,
-        width: 500,
+        height: 400,
+        width: 400,
         child: MultiSelectCheckList(
           textStyles: const MultiSelectTextStyles(
               selectedTextStyle:
@@ -96,6 +98,7 @@ class _FullSetListState extends State<FullSetList> {
           },
         ));
 
+    // Scrollable list of the sets that you selected
     Widget selectedSetsList = Container(
         height: 500,
         width: 500,
@@ -112,19 +115,40 @@ class _FullSetListState extends State<FullSetList> {
             ],
           )),
           itemBuilder: (context, index) {
+            String setCode =
+                _fullSetData.data[int.parse(_selectedSets[index])].code;
+            String iconUri = _fullSetData
+                    .data[int.parse(_selectedSets[index])].iconSvgUri.origin +
+                _fullSetData
+                    .data[int.parse(_selectedSets[index])].iconSvgUri.path;
+            selectedSetCodes.add(setCode);
             return ListTile(
-              title: Row(
-                children: [
-                  Text(_fullSetData.data[int.parse(_selectedSets[index])].name),
-                  Text(_fullSetData.data[int.parse(_selectedSets[index])].code)
-                ],
-              ),
-            );
+                title: Text(
+                    _fullSetData.data[int.parse(_selectedSets[index])].name),
+                subtitle: Text(setCode),
+                trailing: Container(
+                  width: 20,
+                  height: 20,
+                  child: SvgPicture.network(iconUri,
+                      semanticsLabel: "$setCode icon",
+                      placeholderBuilder: (BuildContext context) =>
+                          const CircularProgressIndicator()),
+                ));
           },
         ));
 
+    // Simple divider between the lists.
+    Widget divider = const VerticalDivider(
+      width: 20,
+      thickness: 5,
+      indent: 20,
+      endIndent: 0,
+      color: Colors.black,
+    );
+
+    // Side-by-side composition of the list of all sets and the selected sets
     Widget limitToSetsPanel = Row(
-      children: [scrollableList, selectedSetsList],
+      children: [scrollableList, divider, selectedSetsList],
     );
 
     return limitToSetsPanel;

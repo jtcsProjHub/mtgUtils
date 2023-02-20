@@ -75,7 +75,7 @@ class _ImportScreenState extends State<ImportScreen> {
     return importPrefsAndData();
   }
 
-  final Widget _mtgFullSetListScroll = const FullSetList();
+  final Widget _mtgFullSetListScroll = FullSetList();
 
   // Function that generates and returns the list of dropdown boxes that indicate all of the columns in the CSV
   List<Widget> csvColumnDropDowns() {
@@ -356,7 +356,14 @@ class _ImportScreenState extends State<ImportScreen> {
             style: const TextStyle(fontWeight: FontWeight.w600)));
   }
 
-  void _processImportFile() {}
+  void _processImportFile() {
+    print("Importing data.");
+    if (_useSetImportLimits) {
+      print("Filtering from the sets:");
+      print(_mtgFullSetListScroll);
+    }
+  }
+
   void _selectImportFile() async {
     // Lets the user pick one file; files with any file extension can be selected
     FilePickerResult? result =

@@ -8,5 +8,10 @@ class ScryfallSingleton {
     return _singleton;
   }
 
+  // Realized that the client actually wants to be told to close
+  dispose() {
+    apiClient.close();
+  }
+
   ScryfallSingleton._internal();
 }
