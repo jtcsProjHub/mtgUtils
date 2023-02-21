@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:convert';
-import 'package:convert/convert.dart';
 import 'package:import_screen_proto/constants.dart';
 import 'package:import_screen_proto/widgets/full_set_list.dart';
 
@@ -75,7 +73,13 @@ class _ImportScreenState extends State<ImportScreen> {
     return importPrefsAndData();
   }
 
-  final Widget _mtgFullSetListScroll = FullSetList();
+  void _setImportPrefsFunc(List<String> userSetPrefs) {
+    _setImportPrefs = userSetPrefs;
+  }
+
+  late final Widget _mtgFullSetListScroll = FullSetList(
+    setUserPrefs: _setImportPrefsFunc,
+  );
 
   // Function that generates and returns the list of dropdown boxes that indicate all of the columns in the CSV
   List<Widget> csvColumnDropDowns() {
@@ -328,7 +332,9 @@ class _ImportScreenState extends State<ImportScreen> {
               _importFilePreview(),
             ],
             Tooltip(
-                message: 'Kicks off the import process on the specified data',
+                message: _importFileContents.isEmpty
+                    ? 'No file selected. Please select one using the button above me.'
+                    : 'Kicks off the import process on the specified data.',
                 waitDuration: const Duration(seconds: 1),
                 child: ElevatedButton.icon(
                   onPressed: _importFileContents.isEmpty
@@ -339,7 +345,7 @@ class _ImportScreenState extends State<ImportScreen> {
                 )),
             fancyCheckBox(),
             if (_useSetImportLimits) ...[
-              _mtgFullSetListScroll,
+              Expanded(child: _mtgFullSetListScroll),
             ],
           ],
         ));
@@ -356,13 +362,7 @@ class _ImportScreenState extends State<ImportScreen> {
             style: const TextStyle(fontWeight: FontWeight.w600)));
   }
 
-  void _processImportFile() {
-    print("Importing data.");
-    if (_useSetImportLimits) {
-      print("Filtering from the sets:");
-      print(_mtgFullSetListScroll);
-    }
-  }
+  void _processImportFile() {}
 
   void _selectImportFile() async {
     // Lets the user pick one file; files with any file extension can be selected

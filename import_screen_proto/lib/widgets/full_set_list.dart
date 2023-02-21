@@ -5,7 +5,9 @@ import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class FullSetList extends StatefulWidget {
-  FullSetList({super.key});
+  FullSetList({super.key, required this.setUserPrefs});
+
+  Function setUserPrefs;
 
   @override
   State<FullSetList> createState() => _FullSetListState();
@@ -20,7 +22,7 @@ class _FullSetListState extends State<FullSetList> {
 
   // These are going to be strings of the indices. Easier that way.
   List<String> _selectedSets = [];
-  List<String> selectedSetCodes = [];
+  List<String> _selectedSetCodes = [];
 
   @override
   void initState() {
@@ -29,6 +31,8 @@ class _FullSetListState extends State<FullSetList> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => widget.setUserPrefs(_selectedSetCodes));
     if (_fullSetData.data.isEmpty) {
       return FutureBuilder(
           future: _mtgSetList(),
@@ -63,79 +67,85 @@ class _FullSetListState extends State<FullSetList> {
   // Actually builds out the scrollable list of all sets from the paginated set data
   Widget _buildListView(PaginableList<MtgSet> setData) {
     _fullSetData = setData;
-    selectedSetCodes = [];
+    _selectedSetCodes = [];
 
     Widget scrollableList = Container(
-        height: 400,
-        width: 400,
-        child: MultiSelectCheckList(
-          textStyles: const MultiSelectTextStyles(
-              selectedTextStyle:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          itemsDecoration: MultiSelectDecorations(
-              selectedDecoration:
-                  BoxDecoration(color: Colors.indigo.withOpacity(0.8))),
-          listViewSettings: ListViewSettings(
-              separatorBuilder: (context, index) => const Divider(
-                    height: 0,
-                  )),
-          controller: _multiController,
-          items: List.generate(
-              _fullSetData.length,
-              (index) => CheckListCard(
-                  value: index.toString(),
-                  title: Text(_fullSetData[index].name),
-                  subtitle: Text(_fullSetData[index].code),
-                  selectedColor: Colors.white,
-                  checkColor: Colors.indigo,
-                  checkBoxBorderSide: const BorderSide(color: Colors.blue),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)))),
-          onChange: (allSelectedItems, selectedItem) {
-            setState(() {
-              _selectedSets = allSelectedItems;
-            });
-          },
-        ));
+        width: 500,
+        child: Column(children: [
+          const Text("MTG Sets to Select"),
+          Expanded(
+              child: MultiSelectCheckList(
+            textStyles: const MultiSelectTextStyles(
+                selectedTextStyle: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+            itemsDecoration: MultiSelectDecorations(
+                selectedDecoration:
+                    BoxDecoration(color: Colors.indigo.withOpacity(0.8))),
+            listViewSettings: ListViewSettings(
+                separatorBuilder: (context, index) => const Divider(
+                      height: 0,
+                    )),
+            controller: _multiController,
+            items: List.generate(
+                _fullSetData.length,
+                (index) => CheckListCard(
+                    value: index.toString(),
+                    title: Text(_fullSetData[index].name),
+                    subtitle: Text(_fullSetData[index].code),
+                    selectedColor: Colors.white,
+                    checkColor: Colors.indigo,
+                    checkBoxBorderSide: const BorderSide(color: Colors.blue),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)))),
+            onChange: (allSelectedItems, selectedItem) {
+              setState(() {
+                _selectedSets = allSelectedItems;
+              });
+            },
+          ))
+        ]));
 
     // Scrollable list of the sets that you selected
     Widget selectedSetsList = Container(
-        height: 500,
         width: 500,
-        child: ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: _controller,
-          itemCount: _selectedSets.length,
-          shrinkWrap: true,
-          prototypeItem: ListTile(
-              title: Row(
-            children: [
-              Text(_fullSetData.data.first.name),
-              Text(_fullSetData.data.first.code)
-            ],
-          )),
-          itemBuilder: (context, index) {
-            String setCode =
-                _fullSetData.data[int.parse(_selectedSets[index])].code;
-            String iconUri = _fullSetData
-                    .data[int.parse(_selectedSets[index])].iconSvgUri.origin +
-                _fullSetData
-                    .data[int.parse(_selectedSets[index])].iconSvgUri.path;
-            selectedSetCodes.add(setCode);
-            return ListTile(
-                title: Text(
-                    _fullSetData.data[int.parse(_selectedSets[index])].name),
-                subtitle: Text(setCode),
-                trailing: Container(
-                  width: 20,
-                  height: 20,
-                  child: SvgPicture.network(iconUri,
-                      semanticsLabel: "$setCode icon",
-                      placeholderBuilder: (BuildContext context) =>
-                          const CircularProgressIndicator()),
-                ));
-          },
-        ));
+        child: Column(children: [
+          const Text("Selected Sets"),
+          Expanded(
+              child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: _controller,
+            itemCount: _selectedSets.length,
+            shrinkWrap: true,
+            prototypeItem: ListTile(
+                title: Row(
+              children: [
+                Text(_fullSetData.data.first.name),
+                Text(_fullSetData.data.first.code)
+              ],
+            )),
+            itemBuilder: (context, index) {
+              String setCode =
+                  _fullSetData.data[int.parse(_selectedSets[index])].code;
+              String iconUri = _fullSetData
+                      .data[int.parse(_selectedSets[index])].iconSvgUri.origin +
+                  _fullSetData
+                      .data[int.parse(_selectedSets[index])].iconSvgUri.path;
+              _selectedSetCodes.add(setCode);
+              return ListTile(
+                  title: Text(
+                      _fullSetData.data[int.parse(_selectedSets[index])].name),
+                  subtitle: Text(setCode),
+                  trailing: Container(
+                    width: 20,
+                    height: 20,
+                    child: SvgPicture.network(iconUri,
+                        semanticsLabel: "$setCode icon",
+                        placeholderBuilder: (BuildContext context) =>
+                            const CircularProgressIndicator()),
+                  ));
+            },
+          ))
+        ]));
 
     // Simple divider between the lists.
     Widget divider = const VerticalDivider(
