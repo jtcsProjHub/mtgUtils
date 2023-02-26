@@ -172,8 +172,8 @@ class _ImportScreenState extends State<ImportScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: const BoxDecoration(
             border: Border(
-                top: BorderSide(color: Colors.black, width: 2),
-                bottom: BorderSide(color: Colors.black, width: 2))),
+          top: BorderSide(color: Colors.black, width: 2),
+        )),
         child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: Container(
@@ -249,10 +249,10 @@ class _ImportScreenState extends State<ImportScreen> {
         ));
 
     String csvExampleText = '';
-    _csvColumnsSelected.forEach((selection) {
+    for (var selection in _csvColumnsSelected) {
       csvExampleText += _csvExampleFields[selection] ??= '<undefined>';
       csvExampleText += ',';
-    });
+    }
 
     if (csvExampleText.isNotEmpty) {
       csvExampleText = csvExampleText.substring(0, csvExampleText.length - 1);
@@ -269,34 +269,50 @@ class _ImportScreenState extends State<ImportScreen> {
     csvDropDownsRowWidgets.add(addRemoveButtons);
 
     // Frame out the row of CSV buttons
-    var csvDropDownRowRow = Container(
+    var csvDropDownRow = Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: const BoxDecoration(
             border: Border(
-                top: BorderSide(color: Colors.black, width: 2),
-                bottom: BorderSide(color: Colors.black, width: 2))),
+          top: BorderSide(color: Colors.black, width: 2),
+        )),
         child: Row(children: csvDropDownsRowWidgets));
 
-    // We now have all of the major elements defined that have any sort of complexity associated with them, so now
-    // we'll assemble the main page widget.
-    return Padding(
-        padding: const EdgeInsets.all(16.0),
+    // Contains all the text and formatting for the file type options
+    Widget inputFileTypeStack =
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(
+        "Input File Type",
+        style: _commonWidgetLabelTextStyle,
+      ),
+      fileTypeDropDown,
+    ]);
+
+    // Contains all the text and formatting for the CSV options
+    Widget csvDetailsStack = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_selectedFileType == 'CSV') ...[
+          Text(
+            "CSV File Details",
+            style: _commonWidgetLabelTextStyle,
+          ),
+          csvDropDownRow,
+        ],
+      ],
+    );
+
+    // Formatted text and bordering for the example file contents
+    Widget exampleTextStack = Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: const BoxDecoration(
+            border: Border(
+          top: BorderSide(color: Colors.black, width: 2),
+          bottom: BorderSide(color: Colors.black, width: 2),
+        )),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Input File Type",
-              style: _commonWidgetLabelTextStyle,
-            ),
-            fileTypeDropDown,
             if (_selectedFileType == 'CSV') ...[
-              Padding(
-                  padding: const EdgeInsetsDirectional.only(top: 20.0),
-                  child: Text(
-                    "CSV File Details",
-                    style: _commonWidgetLabelTextStyle,
-                  )),
-              csvDropDownRowRow,
               const Padding(
                   padding: EdgeInsetsDirectional.only(top: 20.0),
                   child: Text(
@@ -318,8 +334,30 @@ class _ImportScreenState extends State<ImportScreen> {
                       "1 Tranquil Cove (NEO) 280\n1 Swiftwater Cliffs (NEO) 277\n1 Naomi, Pillar of Order (NEO) 229",
                       style: TextStyle(fontWeight: FontWeight.w600))),
             ],
+          ],
+        ));
+
+    // We now have all of the major elements defined that have any sort of
+    //complexity associated with them, so now we'll assemble the main page widget.
+    return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                inputFileTypeStack,
+                Padding(
+                  padding: EdgeInsetsDirectional.only(start: 20.0),
+                  child: csvDetailsStack,
+                ),
+              ],
+            ),
+            exampleTextStack,
             Padding(
-                padding: EdgeInsetsDirectional.only(bottom: 20.0),
+                padding: EdgeInsetsDirectional.only(top: 20.0, bottom: 20.0),
                 child: Tooltip(
                     message: 'Pick the file from your local machine.',
                     waitDuration: const Duration(seconds: 1),
