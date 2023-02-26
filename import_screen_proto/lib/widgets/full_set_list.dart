@@ -195,7 +195,7 @@ class _FullSetListState extends State<FullSetList> {
     if (query.isNotEmpty) {
       List<MtgSet> dummyListData = [];
       for (var item in dummySearchList) {
-        if (item.name.contains(query)) {
+        if (item.name.toLowerCase().contains(query.toLowerCase())) {
           dummyListData.add(item);
         }
       }

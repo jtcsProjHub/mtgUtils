@@ -285,7 +285,7 @@ class _ImportScreenState extends State<ImportScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "File Type",
+              "Input File Type",
               style: _commonWidgetLabelTextStyle,
             ),
             fileTypeDropDown,
@@ -293,7 +293,7 @@ class _ImportScreenState extends State<ImportScreen> {
               Padding(
                   padding: const EdgeInsetsDirectional.only(top: 20.0),
                   child: Text(
-                    "File details",
+                    "CSV File Details",
                     style: _commonWidgetLabelTextStyle,
                   )),
               csvDropDownRowRow,
@@ -344,9 +344,11 @@ class _ImportScreenState extends State<ImportScreen> {
                   label: const Text("Import Data Go!"),
                 )),
             fancyCheckBox(),
-            if (_useSetImportLimits) ...[
-              Expanded(child: _mtgFullSetListScroll),
-            ],
+            Expanded(
+                child: Visibility(
+                    visible: _useSetImportLimits,
+                    maintainState: true,
+                    child: _mtgFullSetListScroll)),
           ],
         ));
   } // end importPrefsAndData
