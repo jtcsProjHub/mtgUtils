@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:collection';
 import 'package:import_screen_proto/scryfall_singleton.dart';
 import 'package:scryfall_api/scryfall_api.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
@@ -14,15 +15,28 @@ class FullSetList extends StatefulWidget {
 }
 
 class _FullSetListState extends State<FullSetList> {
+  // Abstraction of the Scryfall API class so we don't open multiple connections
   final _scryfallSingletonRef = ScryfallSingleton();
+
+  // All of the different widget controllers we need for this widget
   final MultiSelectController<String> _multiController =
       MultiSelectController();
   final ScrollController _controller = ScrollController();
+  TextEditingController editingController = TextEditingController();
+
+  // Placeholder that we'll dump the full MTG set list into once we get it from Scryfall
   PaginableList<MtgSet> _fullSetData = PaginableList(data: [], hasMore: false);
+
+  // Copy and utility data that we'll need for the dynamic search filter capability
+  PaginableList<MtgSet> _fullSetDataCopy =
+      PaginableList(data: [], hasMore: false);
+  List<MtgSet> _items = [];
 
   // These are going to be strings of the indices. Easier that way.
   List<String> _selectedSets = [];
-  List<String> _selectedSetCodes = [];
+  HashSet<MtgSet> _selectedSetCodes = HashSet<MtgSet>();
+  List<String> _selectedSetCodeStrings = [];
+  Map<String, SvgPicture> _setIcons = Map<String, SvgPicture>();
 
   @override
   void initState() {
@@ -31,8 +45,8 @@ class _FullSetListState extends State<FullSetList> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => widget.setUserPrefs(_selectedSetCodes));
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => widget.setUserPrefs(_selectedSetCodeStrings));
     if (_fullSetData.data.isEmpty) {
       return FutureBuilder(
           future: _mtgSetList(),
@@ -49,7 +63,7 @@ class _FullSetListState extends State<FullSetList> {
                 if (snapshot.hasError) {
                   return Container();
                 } else {
-                  return _buildListView(snapshot.data);
+                  return _buildListViewInitial(snapshot.data);
                 }
             }
           });
@@ -64,15 +78,49 @@ class _FullSetListState extends State<FullSetList> {
     return setList;
   }
 
+  Widget _buildListViewInitial(PaginableList<MtgSet> setData) {
+    _fullSetData = setData;
+    _fullSetDataCopy = _fullSetData;
+    _items.addAll(_fullSetData.data);
+
+    // Load these in the background once we fetch the list. That way we don't
+    // hold up the user.
+    for (var set in _items) {
+      String setCode = set.code;
+      String iconUri = set.iconSvgUri.origin + set.iconSvgUri.path;
+      _setIcons[setCode] = SvgPicture.network(iconUri,
+          semanticsLabel: "$setCode icon",
+          placeholderBuilder: (BuildContext context) =>
+              const CircularProgressIndicator());
+    }
+    return _buildListView(setData);
+  }
+
   // Actually builds out the scrollable list of all sets from the paginated set data
   Widget _buildListView(PaginableList<MtgSet> setData) {
-    _fullSetData = setData;
-    _selectedSetCodes = [];
-
+    _selectedSetCodeStrings = [];
+    for (var set in _selectedSetCodes) {
+      _selectedSetCodeStrings.add(set.code);
+    }
     Widget scrollableList = Container(
         width: 500,
         child: Column(children: [
           const Text("MTG Sets to Select"),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: (value) {
+                filterSearchResults(value);
+              },
+              controller: editingController,
+              decoration: const InputDecoration(
+                  labelText: "Search",
+                  hintText: "Search",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+            ),
+          ),
           Expanded(
               child: MultiSelectCheckList(
             textStyles: const MultiSelectTextStyles(
@@ -87,11 +135,11 @@ class _FullSetListState extends State<FullSetList> {
                     )),
             controller: _multiController,
             items: List.generate(
-                _fullSetData.length,
+                _items.length,
                 (index) => CheckListCard(
                     value: index.toString(),
-                    title: Text(_fullSetData[index].name),
-                    subtitle: Text(_fullSetData[index].code),
+                    title: Text(_items[index].name),
+                    subtitle: Text(_items[index].code),
                     selectedColor: Colors.white,
                     checkColor: Colors.indigo,
                     checkBoxBorderSide: const BorderSide(color: Colors.blue),
@@ -116,33 +164,10 @@ class _FullSetListState extends State<FullSetList> {
             controller: _controller,
             itemCount: _selectedSets.length,
             shrinkWrap: true,
-            prototypeItem: ListTile(
-                title: Row(
-              children: [
-                Text(_fullSetData.data.first.name),
-                Text(_fullSetData.data.first.code)
-              ],
-            )),
+            prototypeItem: getMtgSetCard(_fullSetData.data.first, false),
             itemBuilder: (context, index) {
-              String setCode =
-                  _fullSetData.data[int.parse(_selectedSets[index])].code;
-              String iconUri = _fullSetData
-                      .data[int.parse(_selectedSets[index])].iconSvgUri.origin +
-                  _fullSetData
-                      .data[int.parse(_selectedSets[index])].iconSvgUri.path;
-              _selectedSetCodes.add(setCode);
-              return ListTile(
-                  title: Text(
-                      _fullSetData.data[int.parse(_selectedSets[index])].name),
-                  subtitle: Text(setCode),
-                  trailing: Container(
-                    width: 20,
-                    height: 20,
-                    child: SvgPicture.network(iconUri,
-                        semanticsLabel: "$setCode icon",
-                        placeholderBuilder: (BuildContext context) =>
-                            const CircularProgressIndicator()),
-                  ));
+              return getMtgSetCard(
+                  _fullSetData.data[int.parse(_selectedSets[index])], false);
             },
           ))
         ]));
@@ -162,5 +187,58 @@ class _FullSetListState extends State<FullSetList> {
     );
 
     return limitToSetsPanel;
+  } // end buildListView
+
+  void filterSearchResults(String query) {
+    List<MtgSet> dummySearchList = [];
+    dummySearchList.addAll(_fullSetDataCopy.data);
+    if (query.isNotEmpty) {
+      List<MtgSet> dummyListData = [];
+      for (var item in dummySearchList) {
+        if (item.name.contains(query)) {
+          dummyListData.add(item);
+        }
+      }
+      setState(() {
+        _items.clear();
+        _items.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        _items.clear();
+        _items.addAll(_fullSetDataCopy.data);
+      });
+    }
   }
+
+  Widget getMtgSetCard(MtgSet mtgSet, bool selectable) {
+    return Card(
+        child: ListTile(
+            visualDensity: VisualDensity(vertical: 2),
+            onTap: () {
+              if (selectable) {
+                doMultiSelectionMtgSet(mtgSet);
+              }
+            },
+            hoverColor: Colors.indigo.withOpacity(0.8),
+            title: Text(mtgSet.name),
+            subtitle: Text(mtgSet.code),
+            leading: Container(
+              width: 50,
+              height: 50,
+              child: _setIcons[mtgSet.code],
+            ),
+            trailing: Visibility(
+              visible: selectable,
+              child: Icon(
+                  _selectedSetCodes.contains(mtgSet)
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
+                  size: 30,
+                  color: Colors.indigo),
+            )));
+  }
+
+  void doMultiSelectionMtgSet(MtgSet mtgSet) {}
 }
