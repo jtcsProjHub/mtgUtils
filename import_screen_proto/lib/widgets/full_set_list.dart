@@ -5,9 +5,9 @@ import 'package:scryfall_api/scryfall_api.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class FullSetList extends StatefulWidget {
-  FullSetList({super.key, required this.setUserPrefs});
+  const FullSetList({super.key, required this.setUserPrefs});
 
-  Function setUserPrefs;
+  final Function setUserPrefs;
 
   @override
   State<FullSetList> createState() => _FullSetListState();
